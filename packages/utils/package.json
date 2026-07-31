@@ -1,6 +1,6 @@
 {
   "name": "@muja-ui/utils",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Framework-agnostic utilities shared across muja-ui packages",
   "license": "MIT",
   "type": "module",
