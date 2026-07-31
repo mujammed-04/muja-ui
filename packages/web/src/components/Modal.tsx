@@ -3,7 +3,8 @@
 import type { Size } from '@muja-ui/core';
 import { cx } from '@muja-ui/utils';
 import type { ComponentPropsWithRef, MouseEvent, ReactElement } from 'react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { useDialogBehavior } from '../internal/useDialogBehavior';
 
 export interface ModalProps extends ComponentPropsWithRef<'div'> {
   open: boolean;
@@ -38,24 +39,7 @@ export function Modal({
   ...rest
 }: ModalProps): ReactElement | null {
   const panelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    panelRef.current?.focus();
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open, onClose]);
+  useDialogBehavior(open, onClose, panelRef);
 
   if (!open) return null;
 

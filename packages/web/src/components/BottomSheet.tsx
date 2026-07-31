@@ -2,7 +2,8 @@
 
 import { cx } from '@muja-ui/utils';
 import type { ComponentPropsWithRef, MouseEvent, PointerEvent, ReactElement } from 'react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { useDialogBehavior } from '../internal/useDialogBehavior';
 
 const DISMISS_THRESHOLD_PX = 96;
 
@@ -36,24 +37,7 @@ export function BottomSheet({
 }: BottomSheetProps): ReactElement | null {
   const panelRef = useRef<HTMLDivElement>(null);
   const dragStartY = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    panelRef.current?.focus();
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open, onClose]);
+  useDialogBehavior(open, onClose, panelRef);
 
   if (!open) return null;
 
