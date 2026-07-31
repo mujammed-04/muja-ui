@@ -1,0 +1,4 @@
+{
+  "extends": "@muja-ui/tsconfig/react-library.json",
+  "include": ["src", "tsup.config.ts", "vitest.config.ts"]
+}

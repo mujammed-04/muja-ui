@@ -1,0 +1,176 @@
+/* ==========================================================================
+   muja-ui web styles
+   Every value references a --mj-* custom property emitted by <ThemeStyles />,
+   so light/dark/custom themes apply without any component re-render.
+   ========================================================================== */
+
+/* Button ------------------------------------------------------------------ */
+
+.mj-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mj-space-2);
+  border: var(--mj-border-width-thin) solid transparent;
+  border-radius: var(--mj-radius-md);
+  font-family: var(--mj-font-sans);
+  font-weight: var(--mj-font-weight-medium);
+  line-height: var(--mj-leading-none);
+  white-space: nowrap;
+  text-decoration: none;
+  user-select: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--mj-duration-fast) var(--mj-ease-standard),
+    border-color var(--mj-duration-fast) var(--mj-ease-standard),
+    color var(--mj-duration-fast) var(--mj-ease-standard),
+    box-shadow var(--mj-duration-fast) var(--mj-ease-standard);
+}
+
+.mj-button:focus-visible {
+  outline: var(--mj-border-width-medium) solid var(--mj-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.mj-button:disabled {
+  cursor: not-allowed;
+  opacity: var(--mj-opacity-disabled);
+}
+
+.mj-button[data-loading] {
+  cursor: progress;
+}
+
+.mj-button[data-full-width] {
+  width: 100%;
+}
+
+/* Sizes */
+
+.mj-button[data-size='sm'] {
+  height: var(--mj-space-8);
+  padding: 0 var(--mj-space-3);
+  font-size: var(--mj-font-size-sm);
+}
+
+.mj-button[data-size='md'] {
+  height: var(--mj-space-10);
+  padding: 0 var(--mj-space-4);
+  font-size: var(--mj-font-size-sm);
+}
+
+.mj-button[data-size='lg'] {
+  height: var(--mj-space-12);
+  padding: 0 var(--mj-space-5);
+  font-size: var(--mj-font-size-md);
+}
+
+/* Variants */
+
+.mj-button[data-variant='primary'] {
+  background-color: var(--mj-color-primary);
+  color: var(--mj-color-on-primary);
+}
+.mj-button[data-variant='primary']:hover:not(:disabled) {
+  background-color: var(--mj-color-primary-hover);
+}
+.mj-button[data-variant='primary']:active:not(:disabled) {
+  background-color: var(--mj-color-primary-active);
+}
+
+.mj-button[data-variant='secondary'] {
+  background-color: var(--mj-color-secondary);
+  color: var(--mj-color-on-secondary);
+}
+.mj-button[data-variant='secondary']:hover:not(:disabled) {
+  background-color: var(--mj-color-secondary-hover);
+}
+.mj-button[data-variant='secondary']:active:not(:disabled) {
+  background-color: var(--mj-color-secondary-active);
+}
+
+.mj-button[data-variant='outline'] {
+  background-color: transparent;
+  border-color: var(--mj-color-border-strong);
+  color: var(--mj-color-text);
+}
+.mj-button[data-variant='outline']:hover:not(:disabled) {
+  background-color: var(--mj-color-surface-hover);
+}
+.mj-button[data-variant='outline']:active:not(:disabled) {
+  background-color: var(--mj-color-surface-active);
+}
+
+.mj-button[data-variant='ghost'] {
+  background-color: transparent;
+  color: var(--mj-color-text);
+}
+.mj-button[data-variant='ghost']:hover:not(:disabled) {
+  background-color: var(--mj-color-surface-hover);
+}
+.mj-button[data-variant='ghost']:active:not(:disabled) {
+  background-color: var(--mj-color-surface-active);
+}
+
+.mj-button[data-variant='danger'] {
+  background-color: var(--mj-color-danger);
+  color: var(--mj-color-on-danger);
+}
+.mj-button[data-variant='danger']:hover:not(:disabled) {
+  background-color: var(--mj-color-danger-hover);
+}
+.mj-button[data-variant='danger']:active:not(:disabled) {
+  background-color: var(--mj-color-danger-active);
+}
+
+/* Button internals */
+
+.mj-button__icon {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
+.mj-button__spinner {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  border-radius: var(--mj-radius-full);
+  border: 2px solid currentcolor;
+  border-inline-end-color: transparent;
+  animation: mj-spin 0.6s linear infinite;
+}
+
+@keyframes mj-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Divider ------------------------------------------------------------------ */
+
+.mj-divider {
+  border: none;
+  border-top: var(--mj-border-width-thin) solid var(--mj-color-border);
+  margin: 0;
+}
+
+.mj-divider--vertical {
+  border-top: none;
+  border-left: var(--mj-border-width-thin) solid var(--mj-color-border);
+  width: 0;
+  align-self: stretch;
+}
+
+/* Reduced motion ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .mj-button {
+    transition: none;
+  }
+  .mj-button__spinner {
+    animation-duration: 1.5s;
+  }
+}

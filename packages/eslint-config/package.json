@@ -1,0 +1,21 @@
+{
+  "name": "@muja-ui/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared ESLint flat configurations for muja-ui packages",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./base.js",
+    "./react": "./react.js"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^16.3.0",
+    "typescript-eslint": "^8.65.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  }
+}
