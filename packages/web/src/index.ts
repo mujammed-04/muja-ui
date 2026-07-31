@@ -11,6 +11,46 @@ export { Icon, type IconProps } from './components/Icon';
 
 // Form
 export { Button, type ButtonProps } from './components/Button';
+export { IconButton, type IconButtonProps } from './components/IconButton';
+export { Input, type InputProps } from './components/Input';
+export { Textarea, type TextareaProps } from './components/Textarea';
+export { Label, type LabelProps } from './components/Label';
+export { Checkbox, type CheckboxProps } from './components/Checkbox';
+export { Switch, type SwitchProps } from './components/Switch';
+export { Select, type SelectProps } from './components/Select';
+
+// Feedback
+export { Skeleton, type SkeletonProps } from './components/Skeleton';
+export { Spinner, type SpinnerProps } from './components/Spinner';
+export { Progress, type ProgressProps } from './components/Progress';
+
+// Layout & data display
+export { Badge, type BadgeProps, type BadgeTone } from './components/Badge';
+export {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  type CardProps,
+  type CardTitleProps,
+} from './components/Card';
+export {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHeader,
+  TableHeaderCell,
+  TableRow,
+  type TableProps,
+} from './components/Table';
+export { Tooltip, type TooltipProps } from './components/Tooltip';
+
+// Client-only components (Avatar, Tabs, Modal) live in `@muja-ui/web/client`
+// so this entry stays React Server Components-safe.
 
 // SSR theming
 export { ThemeStyles, type ThemeStylesProps } from './theme/ThemeStyles';

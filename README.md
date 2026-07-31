@@ -30,7 +30,7 @@ Design tokens → theme engine → CSS variables. One API, every platform.
 
 | Package                                                            | What's inside                                                                               |
 | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| [`@muja-ui/web`](https://www.npmjs.com/package/@muja-ui/web)       | SSR-first React components: Box, Flex, Stack, Text, Heading, Icon, Button, `ThemeStyles`, … |
+| [`@muja-ui/web`](https://www.npmjs.com/package/@muja-ui/web)       | SSR-first React components: primitives (Box, Flex, Stack, Text, …), forms (Button, Input, Select, Checkbox, Switch, …), feedback (Spinner, Skeleton, Progress), layout (Card, Badge, Table, Tooltip) and client components (Avatar, Tabs, Modal via `/client`) |
 | [`@muja-ui/core`](https://www.npmjs.com/package/@muja-ui/core)     | Theme engine, CSS-variable generator, icon registry, `ThemeProvider` + hooks (`/client`)    |
 | [`@muja-ui/tokens`](https://www.npmjs.com/package/@muja-ui/tokens) | Design tokens — platform-neutral values shared by web and native                            |
 | [`@muja-ui/icons`](https://www.npmjs.com/package/@muja-ui/icons)   | Tree-shakable stroke icon set                                                               |
