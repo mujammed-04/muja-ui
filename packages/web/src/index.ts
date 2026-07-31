@@ -49,10 +49,13 @@ export {
 } from './components/Table';
 export { Tooltip, type TooltipProps } from './components/Tooltip';
 export { ScrollArea, type ScrollAreaProps } from './components/ScrollArea';
+export { Chip, type ChipProps } from './components/Chip';
+export { Container, type ContainerProps } from './components/Container';
+export { Section, type SectionProps } from './components/Section';
 
 // Client-only components (Avatar, Tabs, Modal, Popover, DropdownMenu, Drawer,
-// Calendar, Carousel) live in `@muja-ui/web/client` so this entry stays React
-// Server Components-safe.
+// Calendar, Carousel, RadioGroup, Accordion, Toast, BottomSheet) live in
+// `@muja-ui/web/client` so this entry stays React Server Components-safe.
 
 // SSR theming
 export { ThemeStyles, type ThemeStylesProps } from './theme/ThemeStyles';
