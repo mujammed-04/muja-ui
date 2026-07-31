@@ -48,9 +48,11 @@ export {
   type TableProps,
 } from './components/Table';
 export { Tooltip, type TooltipProps } from './components/Tooltip';
+export { ScrollArea, type ScrollAreaProps } from './components/ScrollArea';
 
-// Client-only components (Avatar, Tabs, Modal) live in `@muja-ui/web/client`
-// so this entry stays React Server Components-safe.
+// Client-only components (Avatar, Tabs, Modal, Popover, DropdownMenu, Drawer,
+// Calendar, Carousel) live in `@muja-ui/web/client` so this entry stays React
+// Server Components-safe.
 
 // SSR theming
 export { ThemeStyles, type ThemeStylesProps } from './theme/ThemeStyles';
