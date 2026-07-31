@@ -1,6 +1,6 @@
 {
   "name": "@muja-ui/web",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "muja-ui web components — SSR-first, semantic HTML, themed via CSS variables",
   "license": "MIT",
   "type": "module",
