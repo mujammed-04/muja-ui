@@ -1,27 +1,51 @@
-# muja-ui
+<div align="center">
 
-A production-grade design system for **Next.js (SSR-first)** and **React Native**, built from
-[DESIGN_SYSTEM_BLUEPRINT.md](./DESIGN_SYSTEM_BLUEPRINT.md).
+# 🎨 muja-ui
 
-Turborepo + pnpm workspaces, TypeScript-first, tree-shakable packages, no hardcoded colors —
-every visual value flows from design tokens through the theme engine into CSS variables.
+**A cross-platform design system for Next.js (SSR-first) and React Native.**
 
-## Packages
+Design tokens → theme engine → CSS variables. One API, every platform.
 
-| Package                  | Purpose                                                                                                                                                                               |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@muja-ui/tokens`        | Design tokens (colors, typography, spacing, radius, border, shadow, opacity, breakpoints, motion, z-index). Platform-neutral numbers so native can consume the same values.           |
-| `@muja-ui/core`          | Theme engine: `lightTheme`/`darkTheme`, `createTheme`, `themeToCssVars`/`cssVar`, icon registry, shared types. `@muja-ui/core/client` ships `ThemeProvider` + hooks (`"use client"`). |
-| `@muja-ui/web`           | SSR-first React components: Box, Flex, Stack, Spacer, Divider, Text, Heading, VisuallyHidden, Icon, Button, plus `ThemeStyles`, `ColorModeScript` and `@muja-ui/web/styles.css`.      |
-| `@muja-ui/icons`         | Tree-shakable stroke-icon definitions (`CheckIcon`, `SunIcon`, …) + `allIcons` for registry lookup.                                                                                   |
-| `@muja-ui/utils`         | Framework-free helpers (`cx`, `deepMerge`, `clamp`, …).                                                                                                                               |
-| `@muja-ui/tsconfig`      | Shared TypeScript configs (private).                                                                                                                                                  |
-| `@muja-ui/eslint-config` | Shared ESLint flat configs (private).                                                                                                                                                 |
+[![CI](https://github.com/mujammed-04/muja-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/mujammed-04/muja-ui/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/%40muja-ui%2Fweb?label=%40muja-ui%2Fweb&color=4f46e5)](https://www.npmjs.com/package/@muja-ui/web)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![React 19](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-## Quick start (Next.js App Router)
+</div>
+
+---
+
+## ✨ Highlights
+
+- 🧬 **Token-driven** — colors, typography, spacing, radius, shadows, motion, z-index. No component ever hardcodes a value.
+- 🌗 **Dark mode done right** — `light / dark / system` with persistence and zero SSR flash.
+- ⚡ **SSR & RSC-first** — every component renders in React Server Components; only the theme provider is a client module.
+- 🎨 **Custom themes in one call** — `createTheme(lightTheme, { colors: { primary: '#7c3aed' } })`.
+- 🌲 **Tree-shakable** — ESM + CJS, `sideEffects: false`, import only what you use.
+- ♿ **Accessible** — semantic HTML, focus-visible rings, `aria-busy` loading states, reduced-motion support.
+- 📱 **React Native on the roadmap** — tokens are platform-neutral data; the native package will share the same API.
+
+## 📦 Packages
+
+| Package                                                            | What's inside                                                                               |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| [`@muja-ui/web`](https://www.npmjs.com/package/@muja-ui/web)       | SSR-first React components: Box, Flex, Stack, Text, Heading, Icon, Button, `ThemeStyles`, … |
+| [`@muja-ui/core`](https://www.npmjs.com/package/@muja-ui/core)     | Theme engine, CSS-variable generator, icon registry, `ThemeProvider` + hooks (`/client`)    |
+| [`@muja-ui/tokens`](https://www.npmjs.com/package/@muja-ui/tokens) | Design tokens — platform-neutral values shared by web and native                            |
+| [`@muja-ui/icons`](https://www.npmjs.com/package/@muja-ui/icons)   | Tree-shakable stroke icon set                                                               |
+| [`@muja-ui/utils`](https://www.npmjs.com/package/@muja-ui/utils)   | Framework-free helpers (`cx`, `deepMerge`, `clamp`, …)                                      |
+
+## 🚀 Quick start
+
+```sh
+pnpm add @muja-ui/web
+```
+
+Wire up the theme once in your root layout (Next.js App Router — everything below is a Server Component):
 
 ```tsx
-// app/layout.tsx — everything here is a Server Component
+// app/layout.tsx
 import { ThemeStyles, ColorModeScript, ThemeProvider } from '@muja-ui/web';
 import '@muja-ui/web/styles.css';
 
@@ -39,6 +63,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   );
 }
 ```
+
+Then build UI with token-bound props:
 
 ```tsx
 import { Box, Button, Heading, Stack, Text } from '@muja-ui/web';
@@ -58,7 +84,7 @@ export default function Page() {
 }
 ```
 
-### Theming
+## 🎨 Theming
 
 ```tsx
 import { createTheme, lightTheme, ThemeStyles } from '@muja-ui/web';
@@ -71,20 +97,36 @@ const brand = createTheme(lightTheme, {
 <ThemeStyles theme={brand} />;
 ```
 
-Dark mode: `ThemeStyles` emits light vars on `:root`, dark vars on `[data-theme="dark"]`
-(plus a `prefers-color-scheme` fallback). `ThemeProvider` manages the
-`light | dark | system` preference, persists it, and sets `data-theme` on `<html>`;
-`ColorModeScript` prevents the SSR flash. `useColorMode()` / `useTheme()` are available
-in client components.
+**How dark mode works:**
 
-## Architecture notes
+- `ThemeStyles` emits light variables on `:root`, dark variables on `[data-theme="dark"]`, plus a `prefers-color-scheme` fallback — themes apply with **zero re-renders**.
+- `ThemeProvider` manages the `light | dark | system` preference, persists it to `localStorage`, and sets `data-theme` on `<html>`.
+- `ColorModeScript` runs before first paint, so SSR pages never flash the wrong mode.
+- In client components: `useColorMode()`, `useTheme()`, `useColorModeValue(a, b)`.
 
-- **Tokens are data.** Unitless numbers + structured shadows so `@muja-ui/native` can share them verbatim.
-- **Components never hardcode colors.** Web styling references `var(--mj-*)` only — inline styles for token-bound style props (`p`, `bg`, `radius`, …) and a static stylesheet for stateful styles (Button variants/sizes, focus ring, spinner).
-- **RSC-safe by default.** Only `@muja-ui/core/client` carries `"use client"`; every component in `@muja-ui/web` renders in Server Components.
-- **Identical API across platforms** (blueprint rule): `@muja-ui/native` will mirror the `@muja-ui/web` component contracts.
+## 🧱 Style props
 
-## Development
+Layout primitives accept token-bound style props that resolve to CSS variables — type-checked against the design scale:
+
+```tsx
+<Box p={4} px={6} bg="surface" radius="lg" shadow="md" borderWidth="thin" borderColor="border" />
+<Flex gap={2} align="center" justify="space-between" />
+```
+
+## 🏗 Architecture
+
+```
+tokens (data) ──► core (theme engine) ──► CSS variables (--mj-*) ──► web components
+                     │
+                     └──► native components (planned) — same tokens, same API
+```
+
+- **Tokens are data** — unitless numbers and structured shadows, consumable by web (as rem/px) and React Native (as-is).
+- **Semantic colors only** — components reference roles (`bg`, `surface`, `primary`, `textSecondary`, …), never raw palette values.
+- **RSC-safe by default** — only `@muja-ui/core/client` carries `"use client"`.
+- **Identical API across platforms** — the blueprint rule: `<Button variant="primary" size="lg" loading>` must work the same on web and native.
+
+## 🛠 Development
 
 ```sh
 pnpm install
@@ -94,19 +136,27 @@ pnpm build         # tsup (ESM + CJS + d.ts) per package
 pnpm changeset     # start a release note
 ```
 
-## Roadmap status
+Releases are automated with [Changesets](https://github.com/changesets/changesets): merge the **Version Packages** PR and CI publishes to npm.
 
-| Blueprint phase                 | Status                                                               |
-| ------------------------------- | -------------------------------------------------------------------- |
-| 1 — Foundation                  | ✅ Turborepo, pnpm, TS, ESLint, Prettier, Changesets, GitHub Actions |
-| 2 — Design tokens               | ✅ All 10 token groups                                               |
-| 3 — Theme engine                | ✅ Light/dark/custom themes, CSS variables                           |
-| 4 — Core package                | ✅ Provider, hooks, utilities, types, icon registry                  |
-| 5 — Web package                 | ✅ SSR/RSC-compatible foundation                                     |
-| 6 — Native package              | ⏳ Next milestone                                                    |
-| 7 — Primitives                  | ✅ Box, Flex, Stack, Spacer, Divider, Text, Heading, Icon            |
-| 8 — Form components             | 🟡 Button shipped; Input, Checkbox, … next                           |
-| 9–11 — Overlays/Feedback/Layout | ⏳ Planned                                                           |
-| 12 — Documentation              | 🟡 README-level; docs app planned                                    |
-| 13 — Testing                    | 🟡 Vitest + Testing Library (47 tests); Playwright/Detox planned     |
-| 14 — Release                    | 🟡 Changesets wired; first publish pending                           |
+## 🗺 Roadmap
+
+| Phase                             | Status                                                               |
+| --------------------------------- | -------------------------------------------------------------------- |
+| 1 — Foundation                    | ✅ Turborepo, pnpm, TS, ESLint, Prettier, Changesets, GitHub Actions |
+| 2 — Design tokens                 | ✅ All 10 token groups                                               |
+| 3 — Theme engine                  | ✅ Light / dark / custom themes via CSS variables                    |
+| 4 — Core package                  | ✅ Provider, hooks, utilities, types, icon registry                  |
+| 5 — Web package                   | ✅ SSR/RSC-compatible foundation                                     |
+| 6 — Native package                | ⏳ Next milestone                                                    |
+| 7 — Primitives                    | ✅ Box, Flex, Stack, Spacer, Divider, Text, Heading, Icon            |
+| 8 — Form components               | 🟡 Button shipped; Input, Checkbox, Switch, Select next              |
+| 9–11 — Overlays, Feedback, Layout | ⏳ Planned                                                           |
+| 12 — Documentation site           | ⏳ Planned                                                           |
+| 13 — Testing                      | 🟡 Vitest + Testing Library; Playwright / Detox planned              |
+| 14 — Release                      | ✅ Automated npm publishing via Changesets                           |
+
+Built from [DESIGN_SYSTEM_BLUEPRINT.md](./DESIGN_SYSTEM_BLUEPRINT.md) — the single source of truth for this project.
+
+## 📄 License
+
+[MIT](./LICENSE)
