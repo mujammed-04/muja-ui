@@ -25,3 +25,43 @@ export {
   ModalTitle,
   type ModalProps,
 } from './components/Modal';
+export {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  type PopoverContentProps,
+  type PopoverProps,
+  type PopoverTriggerProps,
+} from './components/Popover';
+export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  type DropdownMenuContentProps,
+  type DropdownMenuItemProps,
+  type DropdownMenuProps,
+  type DropdownMenuTriggerProps,
+} from './components/DropdownMenu';
+export {
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  type DrawerProps,
+} from './components/Drawer';
+export { Calendar, type CalendarProps } from './components/Calendar';
+export {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselContentProps,
+  type CarouselControlProps,
+  type CarouselItemProps,
+  type CarouselProps,
+} from './components/Carousel';
