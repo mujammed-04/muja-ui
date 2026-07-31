@@ -1,5 +1,14 @@
 # @muja-ui/web
 
+## 0.5.0
+
+### Minor Changes
+
+- 3319b53: Modal, Drawer and BottomSheet now trap focus: Tab/Shift+Tab wrap inside the
+  panel, and focus returns to the previously focused element on close. The
+  shared behaviour (Escape, scroll lock, focus management) lives in one internal
+  hook used by all three dialogs.
+
 ## 0.4.0
 
 ### Minor Changes
