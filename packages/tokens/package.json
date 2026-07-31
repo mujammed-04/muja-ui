@@ -1,6 +1,6 @@
 {
   "name": "@muja-ui/tokens",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Design tokens for muja-ui — platform-neutral values shared by web and native",
   "license": "MIT",
   "type": "module",
