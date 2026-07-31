@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { useState, type ReactElement } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle } from './Modal';
 
@@ -47,6 +48,49 @@ describe('Modal', () => {
 
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onClose).toHaveBeenCalledTimes(2);
+  });
+
+  it('traps Tab focus inside the panel, wrapping at both edges', () => {
+    render(
+      <Modal open onClose={() => undefined} aria-label="Book">
+        <button type="button">First</button>
+        <button type="button">Last</button>
+      </Modal>,
+    );
+    const first = screen.getByRole('button', { name: 'First' });
+    const last = screen.getByRole('button', { name: 'Last' });
+
+    last.focus();
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(document.activeElement).toBe(first);
+
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(document.activeElement).toBe(last);
+  });
+
+  it('returns focus to the previously focused element on close', () => {
+    function Harness(): ReactElement {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <button type="button" onClick={() => setOpen(true)}>
+            Open modal
+          </button>
+          <Modal open={open} onClose={() => setOpen(false)} aria-label="Book">
+            Content
+          </Modal>
+        </>
+      );
+    }
+    render(<Harness />);
+    const trigger = screen.getByRole('button', { name: 'Open modal' });
+    trigger.focus();
+    fireEvent.click(trigger);
+    expect(document.activeElement).toBe(screen.getByRole('dialog'));
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.activeElement).toBe(trigger);
   });
 
   it('respects closeOnOverlayClick={false} and locks body scroll while open', () => {
