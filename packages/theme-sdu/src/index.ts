@@ -97,16 +97,19 @@ export const sduLightTheme: Theme = createTheme(lightTheme, {
     accentActive: bronze[700],
     accentSubtle: bronze[50],
     accentText: bronze[700],
-    onAccent: '#ffffff',
+    // Navy, not white: white on bronze-500 is 2.9:1, below the 4.5:1 AA floor.
+    // Navy-900 on the same bronze is 7:1.
+    onAccent: navy[900],
 
     secondary: navy[100],
     secondaryHover: navy[200],
     secondaryActive: navy[300],
     onSecondary: navy[900],
 
-    danger: '#f43f5e',
-    dangerHover: '#e11d48',
-    dangerActive: '#be123c',
+    // Rose-600 rather than rose-500: white on rose-500 is 3.7:1, under AA.
+    danger: '#e11d48',
+    dangerHover: '#be123c',
+    dangerActive: '#9f1239',
     dangerSubtle: '#fff1f2',
     dangerText: '#be123c',
     onDanger: '#ffffff',
@@ -165,7 +168,8 @@ export const sduDarkTheme: Theme = createTheme(darkTheme, {
     dangerActive: '#fda4af',
     dangerSubtle: '#4c0519',
     dangerText: '#fda4af',
-    onDanger: '#ffffff',
+    // Navy label on the bright rose: white would be 3.7:1, navy-950 is 5.5:1.
+    onDanger: navy[950],
   },
   typography: {
     fontFamily: { sans: sduFontSans },

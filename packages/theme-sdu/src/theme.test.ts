@@ -11,7 +11,7 @@ describe('sduLightTheme', () => {
 
   it('maps bronze to the accent role', () => {
     expect(sduLightTheme.colors.accent).toBe(bronze[500]);
-    expect(sduLightTheme.colors.onAccent).toBe('#ffffff');
+    expect(sduLightTheme.colors.onAccent).toBe(navy[900]);
     expect(sduDarkTheme.colors.accent).toBe(bronze[400]);
   });
 
@@ -36,6 +36,47 @@ describe('sduLightTheme', () => {
     for (const theme of [sduLightTheme, sduDarkTheme]) {
       for (const [role, value] of Object.entries(theme.colors)) {
         expect(value, `${theme.name}: ${role}`).toBeTruthy();
+      }
+    }
+  });
+});
+
+/** WCAG 2.1 relative luminance / contrast ratio, for the on-* pairs below. */
+function luminance(hex: string): number {
+  const channel = (value: number): number => {
+    const c = value / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  const int = parseInt(hex.replace('#', ''), 16);
+  return (
+    0.2126 * channel((int >> 16) & 255) +
+    0.7152 * channel((int >> 8) & 255) +
+    0.0722 * channel(int & 255)
+  );
+}
+
+function contrast(a: string, b: string): number {
+  const first = luminance(a);
+  const second = luminance(b);
+  const hi = Math.max(first, second);
+  const lo = Math.min(first, second);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+describe('contrast', () => {
+  it('clears WCAG AA for every on-color pair', () => {
+    for (const theme of [sduLightTheme, sduDarkTheme]) {
+      const pairs: Array<[string, string, string]> = [
+        ['onPrimary', theme.colors.onPrimary, theme.colors.primary],
+        ['onAccent', theme.colors.onAccent, theme.colors.accent],
+        ['onSecondary', theme.colors.onSecondary, theme.colors.secondary],
+        ['onDanger', theme.colors.onDanger, theme.colors.danger],
+      ];
+      for (const [name, fg, bg] of pairs) {
+        expect(
+          contrast(fg, bg),
+          `${theme.name} ${name}: ${fg} on ${bg}`,
+        ).toBeGreaterThanOrEqual(4.5);
       }
     }
   });
