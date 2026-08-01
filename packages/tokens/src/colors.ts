@@ -31,6 +31,25 @@ const primary = {
   950: '#1e1b4b',
 } as const;
 
+/**
+ * Secondary brand hue, used sparingly for emphasis next to `primary` (the
+ * classic 75/25 split). Teal by default so it stays distinct from the indigo
+ * primary and every status scale — brand themes are expected to override it.
+ */
+const accent = {
+  50: '#f0fdfa',
+  100: '#ccfbf1',
+  200: '#99f6e4',
+  300: '#5eead4',
+  400: '#2dd4bf',
+  500: '#14b8a6',
+  600: '#0d9488',
+  700: '#0f766e',
+  800: '#115e59',
+  900: '#134e4a',
+  950: '#042f2e',
+} as const;
+
 const success = {
   50: '#ecfdf5',
   100: '#d1fae5',
@@ -90,6 +109,7 @@ const info = {
 export const palette = {
   gray,
   primary,
+  accent,
   success,
   warning,
   danger,

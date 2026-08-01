@@ -35,11 +35,13 @@ export {
 } from './components/Popover';
 export {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  type DropdownMenuCheckboxItemProps,
   type DropdownMenuContentProps,
   type DropdownMenuItemProps,
   type DropdownMenuProps,

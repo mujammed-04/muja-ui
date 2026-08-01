@@ -32,7 +32,9 @@ function useDropdownMenuContext(component: string): DropdownMenuContextValue {
 
 function menuItems(menu: HTMLElement): HTMLElement[] {
   return Array.from(
-    menu.querySelectorAll<HTMLElement>('[role="menuitem"]:not([aria-disabled="true"])'),
+    menu.querySelectorAll<HTMLElement>(
+      '[role="menuitem"]:not([aria-disabled="true"]),[role="menuitemcheckbox"]:not([aria-disabled="true"])',
+    ),
   );
 }
 
@@ -231,6 +233,65 @@ export function DropdownMenuItem({
       }}
       {...rest}
     />
+  );
+}
+
+export interface DropdownMenuCheckboxItemProps
+  extends Omit<ComponentPropsWithRef<'button'>, 'onChange'> {
+  checked: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  /**
+   * Close the menu after toggling. Defaults to `false` so multi-select filter
+   * menus stay open — set it for single-shot toggles.
+   */
+  closeOnSelect?: boolean;
+}
+
+/**
+ * Checkable menu entry (`role="menuitemcheckbox"`) for multi-select menus such
+ * as filters. The tick is drawn from `aria-checked`, so it stays in sync with
+ * assistive technology.
+ *
+ * ```tsx
+ * <DropdownMenuCheckboxItem checked={isOn} onCheckedChange={setOn}>
+ *   Sports
+ * </DropdownMenuCheckboxItem>
+ * ```
+ */
+export function DropdownMenuCheckboxItem({
+  checked,
+  onCheckedChange,
+  closeOnSelect = false,
+  disabled,
+  className,
+  onClick,
+  children,
+  ...rest
+}: DropdownMenuCheckboxItemProps): ReactElement {
+  const ctx = useDropdownMenuContext('DropdownMenuCheckboxItem');
+  return (
+    <button
+      type="button"
+      role="menuitemcheckbox"
+      tabIndex={-1}
+      aria-checked={checked}
+      disabled={disabled}
+      aria-disabled={disabled || undefined}
+      className={cx('mj-dropdown__item', 'mj-dropdown__checkbox-item', className)}
+      onClick={(event) => {
+        onClick?.(event);
+        if (event.defaultPrevented || disabled) return;
+        onCheckedChange?.(!checked);
+        if (closeOnSelect) {
+          ctx.setOpen(false);
+          ctx.triggerRef.current?.focus();
+        }
+      }}
+      {...rest}
+    >
+      <span className="mj-dropdown__check" aria-hidden="true" />
+      <span className="mj-dropdown__item-label">{children}</span>
+    </button>
   );
 }
 

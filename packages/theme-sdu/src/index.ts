@@ -18,7 +18,12 @@ export const navy = {
   950: '#050514',
 } as const;
 
-/** SDU brand bronze (accent) scale. Mapped to the `warning` role and exported for direct use. */
+/**
+ * SDU brand bronze scale — the 25% half of the brandbook's 75/25 navy/bronze
+ * split. Mapped to the `accent` role (so `<Button variant="accent">` is a
+ * bronze CTA); `warning` keeps the base theme's amber, since a bronze
+ * emphasis colour is not a warning signal.
+ */
 export const bronze = {
   50: '#fdf3e7',
   100: '#fbe2c4',
@@ -87,15 +92,17 @@ export const sduLightTheme: Theme = createTheme(lightTheme, {
     primaryText: navy[700],
     onPrimary: '#ffffff',
 
+    accent: bronze[500],
+    accentHover: bronze[600],
+    accentActive: bronze[700],
+    accentSubtle: bronze[50],
+    accentText: bronze[700],
+    onAccent: '#ffffff',
+
     secondary: navy[100],
     secondaryHover: navy[200],
     secondaryActive: navy[300],
     onSecondary: navy[900],
-
-    warning: bronze[500],
-    warningSubtle: bronze[50],
-    warningText: bronze[700],
-    onWarning: '#ffffff',
 
     danger: '#f43f5e',
     dangerHover: '#e11d48',
@@ -141,15 +148,17 @@ export const sduDarkTheme: Theme = createTheme(darkTheme, {
     primaryText: navy[300],
     onPrimary: '#ffffff',
 
+    accent: bronze[400],
+    accentHover: bronze[300],
+    accentActive: bronze[200],
+    accentSubtle: bronze[900],
+    accentText: bronze[300],
+    onAccent: navy[950],
+
     secondary: navy[800],
     secondaryHover: navy[700],
     secondaryActive: navy[600],
     onSecondary: navy[50],
-
-    warning: bronze[400],
-    warningSubtle: bronze[900],
-    warningText: bronze[300],
-    onWarning: navy[950],
 
     danger: '#f43f5e',
     dangerHover: '#fb7185',

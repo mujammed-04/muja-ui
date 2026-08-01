@@ -2,6 +2,13 @@
 
 export type Size = 'sm' | 'md' | 'lg';
 
-export type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+export type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'accent'
+  | 'outline'
+  | 'ghost'
+  | 'link'
+  | 'danger';
 
 export type Status = 'info' | 'success' | 'warning' | 'danger';

@@ -91,6 +91,17 @@
   background-color: var(--mj-color-secondary-active);
 }
 
+.mj-button[data-variant='accent'] {
+  background-color: var(--mj-color-accent);
+  color: var(--mj-color-on-accent);
+}
+.mj-button[data-variant='accent']:hover:not(:disabled) {
+  background-color: var(--mj-color-accent-hover);
+}
+.mj-button[data-variant='accent']:active:not(:disabled) {
+  background-color: var(--mj-color-accent-active);
+}
+
 .mj-button[data-variant='outline'] {
   background-color: transparent;
   border-color: var(--mj-color-border-strong);
@@ -112,6 +123,23 @@
 }
 .mj-button[data-variant='ghost']:active:not(:disabled) {
   background-color: var(--mj-color-surface-active);
+}
+
+/* `link` renders as inline text: no box, no padding, so it aligns with the
+   surrounding copy while staying a real <button> for semantics. `size` only
+   affects its font size. */
+.mj-button[data-variant='link'] {
+  height: auto;
+  padding: 0;
+  background-color: transparent;
+  color: var(--mj-color-primary-text);
+  text-underline-offset: 4px;
+}
+.mj-button[data-variant='link']:hover:not(:disabled) {
+  text-decoration: underline;
+}
+.mj-button[data-variant='link']:active:not(:disabled) {
+  color: var(--mj-color-primary-active);
 }
 
 .mj-button[data-variant='danger'] {
@@ -1139,6 +1167,42 @@
 
 .mj-dropdown__item[data-tone='danger'] {
   color: var(--mj-color-danger-text);
+}
+
+/* Checkbox item — the tick is driven by aria-checked so the visual state can
+   never drift from what assistive technology announces. */
+
+.mj-dropdown__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--mj-space-4);
+  height: var(--mj-space-4);
+}
+
+.mj-dropdown__check::after {
+  content: '';
+  width: 30%;
+  height: 60%;
+  margin-top: -12%;
+  border-right: var(--mj-border-width-medium) solid currentcolor;
+  border-bottom: var(--mj-border-width-medium) solid currentcolor;
+  transform: rotate(45deg);
+  opacity: 0;
+}
+
+.mj-dropdown__checkbox-item[aria-checked='true'] {
+  color: var(--mj-color-primary-text);
+}
+
+.mj-dropdown__checkbox-item[aria-checked='true'] .mj-dropdown__check::after {
+  opacity: 1;
+}
+
+.mj-dropdown__item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mj-dropdown__label {
