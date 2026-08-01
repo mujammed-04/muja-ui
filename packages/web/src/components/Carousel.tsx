@@ -12,6 +12,19 @@ interface CarouselContextValue {
   update: () => void;
 }
 
+/**
+ * Imperative handle for driving a carousel from outside — autoplay timers,
+ * custom indicator dots, "jump to slide" links.
+ */
+export interface CarouselApi {
+  /** Scroll a slide (by index) to the start of the viewport. */
+  scrollTo: (index: number) => void;
+  /** Next slide, wrapping to the first when `loop` is set. */
+  scrollNext: () => void;
+  /** Previous slide, wrapping to the last when `loop` is set. */
+  scrollPrev: () => void;
+}
+
 const CarouselContext = createContext<CarouselContextValue | null>(null);
 
 function useCarouselContext(component: string): CarouselContextValue {
@@ -32,6 +45,32 @@ function useCarouselContext(component: string): CarouselContextValue {
 export interface CarouselProps extends ComponentPropsWithRef<'section'> {
   /** Accessible name for the carousel region. */
   'aria-label': string;
+  /** Wrap around at the ends, so the controls never disable. */
+  loop?: boolean;
+  /** Fires with the slide index whenever the snapped slide changes. */
+  onSlideChange?: (index: number) => void;
+  /** Receives an imperative handle — use it for autoplay or custom indicators. */
+  apiRef?: RefObject<CarouselApi | null>;
+}
+
+function slidesOf(viewport: HTMLDivElement): HTMLElement[] {
+  return Array.from(viewport.children) as HTMLElement[];
+}
+
+/** Index of the slide whose left edge sits closest to the scroll position. */
+function nearestSlide(viewport: HTMLDivElement): number {
+  const slides = slidesOf(viewport);
+  if (slides.length === 0) return 0;
+  let best = 0;
+  let bestDistance = Infinity;
+  slides.forEach((slide, index) => {
+    const distance = Math.abs(slide.offsetLeft - viewport.offsetLeft - viewport.scrollLeft);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = index;
+    }
+  });
+  return best;
 }
 
 /**
@@ -49,26 +88,84 @@ export interface CarouselProps extends ComponentPropsWithRef<'section'> {
  *   <CarouselNext />
  * </Carousel>
  * ```
+ *
+ * For autoplay or indicator dots, take the imperative handle and watch the
+ * selected slide:
+ *
+ * ```tsx
+ * const api = useRef<CarouselApi>(null);
+ * const [index, setIndex] = useState(0);
+ * <Carousel aria-label="Banners" loop apiRef={api} onSlideChange={setIndex}>…</Carousel>
+ * ```
  */
-export function Carousel({ className, children, ...rest }: CarouselProps): ReactElement {
+export function Carousel({
+  loop = false,
+  onSlideChange,
+  apiRef,
+  className,
+  children,
+  ...rest
+}: CarouselProps): ReactElement {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
+  const selectedIndex = useRef(0);
+  const onSlideChangeRef = useRef(onSlideChange);
+  onSlideChangeRef.current = onSlideChange;
 
   const update = useCallback(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    setCanPrev(viewport.scrollLeft > 0);
-    setCanNext(viewport.scrollLeft < viewport.scrollWidth - viewport.clientWidth - 1);
+    const atStart = viewport.scrollLeft <= 0;
+    const atEnd = viewport.scrollLeft >= viewport.scrollWidth - viewport.clientWidth - 1;
+    const multiple = slidesOf(viewport).length > 1;
+    setCanPrev(loop ? multiple : !atStart);
+    setCanNext(loop ? multiple : !atEnd);
+
+    const index = nearestSlide(viewport);
+    if (index !== selectedIndex.current) {
+      selectedIndex.current = index;
+      onSlideChangeRef.current?.(index);
+    }
+  }, [loop]);
+
+  const scrollTo = useCallback((index: number) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const slide = slidesOf(viewport)[index];
+    if (!slide) return;
+    viewport.scrollTo?.({ left: slide.offsetLeft - viewport.offsetLeft, behavior: 'smooth' });
   }, []);
 
   const scrollByPage = useCallback(
     (direction: 1 | -1) => {
       const viewport = viewportRef.current;
-      viewport?.scrollBy?.({ left: direction * viewport.clientWidth, behavior: 'smooth' });
+      if (!viewport) return;
+
+      if (loop) {
+        const count = slidesOf(viewport).length;
+        const atStart = viewport.scrollLeft <= 0;
+        const atEnd = viewport.scrollLeft >= viewport.scrollWidth - viewport.clientWidth - 1;
+        if (direction === 1 && atEnd) return scrollTo(0);
+        if (direction === -1 && atStart) return scrollTo(count - 1);
+      }
+
+      viewport.scrollBy?.({ left: direction * viewport.clientWidth, behavior: 'smooth' });
     },
-    [],
+    [loop, scrollTo],
   );
+
+  useEffect(() => {
+    if (!apiRef) return;
+    apiRef.current = {
+      scrollTo,
+      scrollNext: () => scrollByPage(1),
+      scrollPrev: () => scrollByPage(-1),
+    };
+    return () => {
+      apiRef.current = null;
+    };
+  }, [apiRef, scrollTo, scrollByPage]);
 
   useEffect(() => {
     update();

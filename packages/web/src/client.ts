@@ -62,6 +62,7 @@ export {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
   type CarouselContentProps,
   type CarouselControlProps,
   type CarouselItemProps,
