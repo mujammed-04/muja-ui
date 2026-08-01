@@ -155,6 +155,16 @@
 
 /* Button internals */
 
+/* The label is a flex row, not a plain inline box: callers routinely compose an
+   icon and text as children (`<Button><TrashIcon />Delete</Button>`), and CSS
+   resets that set `svg { display: block }` — Tailwind Preflight among them —
+   would otherwise push the icon onto its own line. */
+.mj-button__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mj-space-2);
+}
+
 .mj-button__icon {
   display: inline-flex;
   align-items: center;
