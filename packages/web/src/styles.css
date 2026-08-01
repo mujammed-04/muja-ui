@@ -349,8 +349,12 @@
 
 /* Label ---------------------------------------------------------------------- */
 
+/* Block-level so a field label always sits on its own line above the control;
+   `fit-content` keeps the clickable area hugging the text rather than spanning
+   the whole row. */
 .mj-label {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: var(--mj-space-1);
   font-family: var(--mj-font-sans);
