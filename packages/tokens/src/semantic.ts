@@ -39,6 +39,14 @@ export interface SemanticColors {
   primaryText: string;
   onPrimary: string;
 
+  /** Secondary brand hue for emphasis next to `primary` (CTAs, highlights) */
+  accent: string;
+  accentHover: string;
+  accentActive: string;
+  accentSubtle: string;
+  accentText: string;
+  onAccent: string;
+
   /** Neutral action */
   secondary: string;
   secondaryHover: string;
@@ -100,6 +108,13 @@ export const lightColors: SemanticColors = {
   primaryText: palette.primary[700],
   onPrimary: palette.white,
 
+  accent: palette.accent[600],
+  accentHover: palette.accent[700],
+  accentActive: palette.accent[800],
+  accentSubtle: palette.accent[50],
+  accentText: palette.accent[700],
+  onAccent: palette.white,
+
   secondary: palette.gray[100],
   secondaryHover: palette.gray[200],
   secondaryActive: palette.gray[300],
@@ -156,6 +171,13 @@ export const darkColors: SemanticColors = {
   primarySubtleHover: palette.primary[900],
   primaryText: palette.primary[300],
   onPrimary: palette.white,
+
+  accent: palette.accent[500],
+  accentHover: palette.accent[400],
+  accentActive: palette.accent[300],
+  accentSubtle: palette.accent[950],
+  accentText: palette.accent[300],
+  onAccent: palette.gray[950],
 
   secondary: palette.gray[800],
   secondaryHover: palette.gray[700],

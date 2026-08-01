@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -70,5 +71,73 @@ describe('DropdownMenu', () => {
     renderMenu();
     fireEvent.keyDown(screen.getByRole('button', { name: 'Actions' }), { key: 'ArrowDown' });
     expect(screen.getByRole('menu')).not.toBeNull();
+  });
+});
+
+function renderCheckboxMenu(
+  onCheckedChange = vi.fn(),
+  closeOnSelect = false,
+): ReturnType<typeof vi.fn> {
+  render(
+    <DropdownMenu>
+      <DropdownMenuTrigger>Categories</DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuCheckboxItem
+          checked={false}
+          onCheckedChange={onCheckedChange}
+          closeOnSelect={closeOnSelect}
+        >
+          Sports
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem checked>Music</DropdownMenuCheckboxItem>
+      </DropdownMenuContent>
+    </DropdownMenu>,
+  );
+  return onCheckedChange;
+}
+
+describe('DropdownMenuCheckboxItem', () => {
+  it('exposes checked state through aria-checked', () => {
+    renderCheckboxMenu();
+    fireEvent.click(screen.getByRole('button', { name: 'Categories' }));
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Sports' }).getAttribute('aria-checked'))
+      .toBe('false');
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Music' }).getAttribute('aria-checked'))
+      .toBe('true');
+  });
+
+  it('toggles and keeps the menu open so several boxes can be ticked', () => {
+    const onCheckedChange = renderCheckboxMenu();
+    fireEvent.click(screen.getByRole('button', { name: 'Categories' }));
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Sports' }));
+
+    expect(onCheckedChange).toHaveBeenCalledWith(true);
+    expect(screen.queryByRole('menu')).not.toBeNull();
+  });
+
+  it('closes and refocuses the trigger when closeOnSelect is set', () => {
+    renderCheckboxMenu(vi.fn(), true);
+    fireEvent.click(screen.getByRole('button', { name: 'Categories' }));
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Sports' }));
+
+    expect(screen.queryByRole('menu')).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Categories' }));
+  });
+
+  it('joins the roving focus order alongside plain items', () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Filters</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Reset</DropdownMenuItem>
+          <DropdownMenuCheckboxItem checked={false}>Sports</DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    expect(document.activeElement).toBe(screen.getByRole('menuitem', { name: 'Reset' }));
+
+    fireEvent.keyDown(screen.getByRole('menu'), { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(screen.getByRole('menuitemcheckbox', { name: 'Sports' }));
   });
 });

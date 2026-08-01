@@ -59,6 +59,21 @@ describe('Button', () => {
     expect(button.className).toBe('mj-button custom');
   });
 
+  it('exposes the accent and link variants for CSS targeting', () => {
+    render(
+      <>
+        <Button variant="accent">Register</Button>
+        <Button variant="link">Read more</Button>
+      </>,
+    );
+    expect(screen.getByRole('button', { name: 'Register' }).getAttribute('data-variant')).toBe(
+      'accent',
+    );
+    expect(screen.getByRole('button', { name: 'Read more' }).getAttribute('data-variant')).toBe(
+      'link',
+    );
+  });
+
   it('supports fullWidth via a data attribute', () => {
     render(<Button fullWidth>Wide</Button>);
     expect(screen.getByRole('button', { name: 'Wide' }).getAttribute('data-full-width')).toBe(

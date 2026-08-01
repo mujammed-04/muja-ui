@@ -9,9 +9,15 @@ describe('sduLightTheme', () => {
     expect(sduLightTheme.colors.onPrimary).toBe('#ffffff');
   });
 
-  it('maps bronze to the warning role', () => {
-    expect(sduLightTheme.colors.warning).toBe(bronze[500]);
-    expect(sduDarkTheme.colors.warning).toBe(bronze[400]);
+  it('maps bronze to the accent role', () => {
+    expect(sduLightTheme.colors.accent).toBe(bronze[500]);
+    expect(sduLightTheme.colors.onAccent).toBe('#ffffff');
+    expect(sduDarkTheme.colors.accent).toBe(bronze[400]);
+  });
+
+  it('leaves warning as the base amber — bronze is emphasis, not a warning', () => {
+    expect(sduLightTheme.colors.warning).toBe(lightTheme.colors.warning);
+    expect(sduLightTheme.colors.warning).not.toBe(bronze[500]);
   });
 
   it('puts Gilroy first in the sans stack on both themes', () => {
