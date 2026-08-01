@@ -1,6 +1,6 @@
 {
   "name": "@muja-ui/theme-sdu",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SDU Life brand theme for muja-ui — navy/bronze palette, Gilroy typography, light and dark themes",
   "license": "MIT",
   "type": "module",
