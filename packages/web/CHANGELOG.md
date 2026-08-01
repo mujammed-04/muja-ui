@@ -1,5 +1,38 @@
 # @muja-ui/web
 
+## 0.7.0
+
+### Minor Changes
+
+- 7b388b3: Carousel: looping, slide observation and an imperative handle
+
+  `<Carousel>` gains three optional props so apps can build autoplay banners and
+  indicator dots without reaching for an animation engine:
+
+  - `loop` — the controls wrap around instead of disabling at the ends.
+  - `onSlideChange(index)` — fires when the snapped slide changes.
+  - `apiRef` — receives a `CarouselApi` with `scrollTo`, `scrollNext` and
+    `scrollPrev`.
+
+  The default behaviour is unchanged: without these props the carousel is still
+  the plain CSS scroll-snap one.
+
+### Patch Changes
+
+- cf2fdc9: Fix Button label wrapping when an icon is composed as a child
+
+  `.mj-button__label` had no layout of its own, so `<Button><Icon />Save</Button>`
+  broke onto two lines under any CSS reset that sets `svg { display: block }` —
+  Tailwind Preflight being the common one. The label is now an inline flex row
+  with the standard gap, matching what `leftIcon`/`rightIcon` already produced.
+
+- 4aa3d6a: Make Label block-level so it stops sharing a line with its control
+
+  `.mj-label` was `inline-flex`, so a label followed by an input rendered on the
+  same line whenever the control was narrow enough to fit beside it. It is now
+  `display: flex` with `width: fit-content` — own line, clickable area still
+  hugging the text.
+
 ## 0.6.0
 
 ### Minor Changes
