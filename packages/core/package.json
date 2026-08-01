@@ -1,6 +1,6 @@
 {
   "name": "@muja-ui/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "muja-ui theme engine: themes, CSS variables, icon registry and the color-mode provider",
   "license": "MIT",
   "type": "module",
