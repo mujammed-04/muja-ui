@@ -75,7 +75,9 @@ export const sduLightTheme: Theme = createTheme(lightTheme, {
 
     text: navy[900],
     textSecondary: '#475569',
-    textMuted: '#64748b',
+    // A shade below slate-500: slate-500 is 4.4:1 on bgSubtle and 4.2:1 on
+    // bgMuted, so muted text failed AA on exactly the surfaces it is used on.
+    textMuted: '#5b6a80',
     textDisabled: '#94a3b8',
     textInverse: '#ffffff',
 
@@ -134,7 +136,9 @@ export const sduDarkTheme: Theme = createTheme(darkTheme, {
 
     text: navy[50],
     textSecondary: navy[200],
-    textMuted: navy[400],
+    // Navy-300, not navy-400: muted text is still content, and navy-400 on the
+    // navy-900 surface is 3.2:1, under the 4.5:1 AA floor. Navy-300 is 6.2:1.
+    textMuted: navy[300],
     textDisabled: navy[600],
     textInverse: navy[950],
 

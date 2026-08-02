@@ -64,6 +64,30 @@ function contrast(a: string, b: string): number {
 }
 
 describe('contrast', () => {
+  it('clears WCAG AA for body text on every surface', () => {
+    for (const theme of [sduLightTheme, sduDarkTheme]) {
+      // `textDisabled` is deliberately absent: WCAG 1.4.3 exempts inactive
+      // controls. Everything else here is content and must be readable.
+      const foregrounds = [
+        'text',
+        'textSecondary',
+        'textMuted',
+        'primaryText',
+        'accentText',
+      ] as const;
+      for (const role of foregrounds) {
+        for (const surface of ['bg', 'bgSubtle', 'bgMuted', 'surface'] as const) {
+          const fg = theme.colors[role];
+          const bg = theme.colors[surface];
+          expect(
+            contrast(fg, bg),
+            `${theme.name} ${role} on ${surface}: ${fg} on ${bg}`,
+          ).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    }
+  });
+
   it('clears WCAG AA for every on-color pair', () => {
     for (const theme of [sduLightTheme, sduDarkTheme]) {
       const pairs: Array<[string, string, string]> = [
