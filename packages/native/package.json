@@ -1,6 +1,6 @@
 {
   "name": "@muja-ui/native",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "muja-ui native components — React Native / Expo, themed from the shared design tokens",
   "license": "MIT",
   "type": "module",
