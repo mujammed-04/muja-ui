@@ -11,6 +11,14 @@ export interface IconProps {
   size?: number;
   /** Semantic color token. Defaults to the current text color. */
   color?: SemanticColorToken;
+  /**
+   * Escape hatch for a already-resolved colour string, overriding `color`.
+   *
+   * Prefer `color`. This exists for platform APIs that hand you a colour rather
+   * than letting you pick one — React Navigation's `tabBarIcon({ color })` is
+   * the case it was added for. Do not use it to introduce new colour values.
+   */
+  tint?: string;
   /** Accessible label. Without it the icon is treated as decorative. */
   label?: string;
   strokeWidth?: number;
@@ -29,6 +37,7 @@ export function Icon({
   icon,
   size = 20,
   color = 'text',
+  tint,
   label,
   strokeWidth = 2,
   style,
@@ -59,7 +68,7 @@ export function Icon({
         <Path
           key={index}
           d={d}
-          stroke={theme.colors[color]}
+          stroke={tint ?? theme.colors[color]}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeLinejoin="round"

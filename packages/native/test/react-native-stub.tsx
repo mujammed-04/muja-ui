@@ -62,10 +62,15 @@ function a11yProps({
   ...rest
 }: AnyProps): AnyProps {
   const state = (accessibilityState ?? {}) as A11yState;
+  // A few RN role names differ from their ARIA equivalents.
+  const ROLE_ALIASES: Record<string, string> = { image: 'img', header: 'heading' };
   const value = (accessibilityValue ?? {}) as { text?: string; min?: number; max?: number; now?: number };
   const props: AnyProps = { ...rest };
 
-  if (accessibilityRole) props.role = accessibilityRole;
+  if (accessibilityRole) {
+    const role = String(accessibilityRole);
+    props.role = ROLE_ALIASES[role] ?? role;
+  }
   if (accessibilityLabel) props['aria-label'] = accessibilityLabel;
   if (accessibilityHint) props['aria-description'] = accessibilityHint;
   if (accessibilityLiveRegion) props['aria-live'] = accessibilityLiveRegion;
