@@ -310,6 +310,31 @@ export const FileTextIcon = defineIcon('file-text', [
   'M9 17h6',
 ]);
 
+export const DeleteIcon = defineIcon('delete', [
+  'M9 5h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9L3 12z',
+  'm12 9 4 6',
+  'm16 9-4 6',
+]);
+
+export const FingerprintIcon = defineIcon('fingerprint', [
+  'M12 4a8 8 0 0 0-8 8',
+  'M20 12a8 8 0 0 0-8-8',
+  'M7 12a5 5 0 0 1 10 0v3',
+  'M10 12a2 2 0 0 1 4 0v5',
+  'M6.5 16.5A8 8 0 0 0 9 21',
+  'M17.5 16.5A8 8 0 0 1 15 21',
+]);
+
+export const ScanFaceIcon = defineIcon('scan-face', [
+  'M4 8V5a1 1 0 0 1 1-1h3',
+  'M16 4h3a1 1 0 0 1 1 1v3',
+  'M20 16v3a1 1 0 0 1-1 1h-3',
+  'M8 20H5a1 1 0 0 1-1-1v-3',
+  'M9 10h.01',
+  'M15 10h.01',
+  'M9.5 14.5a3.5 3.5 0 0 0 5 0',
+]);
+
 export const allIcons: readonly IconDefinition[] = [
   CheckIcon,
   XIcon,
@@ -371,4 +396,7 @@ export const allIcons: readonly IconDefinition[] = [
   PhoneIcon,
   CreditCardIcon,
   FileTextIcon,
+  DeleteIcon,
+  FingerprintIcon,
+  ScanFaceIcon,
 ];

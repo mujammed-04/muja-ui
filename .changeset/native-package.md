@@ -22,3 +22,8 @@ no `Table` — are documented in the package README.
 `@muja-ui/icons` grows from 15 to 60 glyphs (navigation, people, events,
 places, analytics, status and actions) to cover the app screens; the new icons
 use the same 24×24 stroke grid and are added to `allIcons`.
+
+`Icon` also takes a `tint` escape hatch for platform APIs that hand you a
+resolved colour instead of letting you choose one (React Navigation's
+`tabBarIcon({ color })`), and the icon set gains `delete`, `fingerprint` and
+`scan-face` for PIN and biometric UI.
