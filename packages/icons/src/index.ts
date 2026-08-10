@@ -335,6 +335,48 @@ export const ScanFaceIcon = defineIcon('scan-face', [
   'M9.5 14.5a3.5 3.5 0 0 0 5 0',
 ]);
 
+export const TrophyIcon = defineIcon('trophy', [
+  'M7 4h10v5a5 5 0 0 1-10 0z',
+  'M7 6H5a2 2 0 0 0 0 4h2',
+  'M17 6h2a2 2 0 0 1 0 4h-2',
+  'M12 14v3',
+  'M9 20h6',
+  'M10 17h4l1 3H9z',
+]);
+
+export const MedalIcon = defineIcon('medal', [
+  'M12 9a6 6 0 1 0 0 12 6 6 0 0 0 0-12',
+  'M12 13.5l1.1 2.2 2.4.3-1.8 1.7.4 2.4-2.1-1.2-2.1 1.2.4-2.4-1.8-1.7 2.4-.3z',
+  'M8 3h8l-2.5 5.4',
+  'm8 3 2.5 5.4',
+]);
+
+export const CrownIcon = defineIcon('crown', [
+  'M3 6l4 4 5-6 5 6 4-4-2 12H5z',
+  'M5 20h14',
+]);
+
+export const SparklesIcon = defineIcon('sparkles', [
+  'm12 3 1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z',
+  'M18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z',
+]);
+
+export const ThumbsUpIcon = defineIcon('thumbs-up', [
+  'M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z',
+  'M7 10l4-7a2 2 0 0 1 3 1.8V9h4.5a2 2 0 0 1 2 2.3l-1.1 7A2 2 0 0 1 17.4 20H7z',
+]);
+
+export const HandshakeIcon = defineIcon('handshake', [
+  'm3 11 4-4 5 5-2 2a2 2 0 0 1-2.8 0z',
+  'm21 11-4-4-3 3',
+  'm12 12 3 3',
+  'm10 14 3 3',
+  'M3 11v3l4 4 4-1',
+  'M21 11v3l-4 4-2-.5',
+]);
+
+export const ActivityIcon = defineIcon('activity', ['M3 12h4l3 8 4-16 3 8h4']);
+
 export const allIcons: readonly IconDefinition[] = [
   CheckIcon,
   XIcon,
@@ -399,4 +441,11 @@ export const allIcons: readonly IconDefinition[] = [
   DeleteIcon,
   FingerprintIcon,
   ScanFaceIcon,
+  TrophyIcon,
+  MedalIcon,
+  CrownIcon,
+  SparklesIcon,
+  ThumbsUpIcon,
+  HandshakeIcon,
+  ActivityIcon,
 ];
