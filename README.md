@@ -158,6 +158,11 @@ interfaces, so the docs cannot drift from the API. Stories import the workspace
 **sources** (not `dist`), so `pnpm storybook` works without building first and
 edits to a component or to `styles.css` hot-reload.
 
+Every push to `main` publishes the static build to GitHub Pages via
+[`deploy-storybook.yml`](.github/workflows/deploy-storybook.yml) →
+**https://mujammed-04.github.io/muja-ui/**. The workflow needs Pages enabled
+once, under _Settings → Pages → Source: **GitHub Actions**_.
+
 ## 🗺 Roadmap
 
 | Phase                             | Status                                                               |
