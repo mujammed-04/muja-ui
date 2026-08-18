@@ -1,0 +1,40 @@
+/* Storybook-only canvas defaults. Component styles live in
+   packages/web/src/styles.css — never patch them from here. */
+
+body {
+  margin: 0;
+}
+
+.sb-show-main.sb-main-padded {
+  padding: var(--mj-space-6);
+  background-color: var(--mj-color-bg);
+}
+
+/* Layout helper for stories that show a row/grid of variants. */
+.story-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mj-space-3);
+}
+
+.story-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mj-space-3);
+  align-items: flex-start;
+}
+
+.story-label {
+  min-width: 96px;
+  font-family: var(--mj-font-mono);
+  font-size: var(--mj-font-size-xs);
+  color: var(--mj-color-text-muted);
+}
+
+/* Docs pages keep Storybook's own light chrome, but the story previews inside
+   them paint the muja-ui background so a dark-mode component is shown on the
+   surface it was designed for. */
+.docs-story {
+  background: var(--mj-color-bg);
+}

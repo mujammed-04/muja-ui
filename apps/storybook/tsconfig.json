@@ -1,0 +1,17 @@
+{
+  "extends": "@muja-ui/tsconfig/react-library.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "paths": {
+      "@muja-ui/core": ["../../packages/core/src/index.ts"],
+      "@muja-ui/core/client": ["../../packages/core/src/client.tsx"],
+      "@muja-ui/icons": ["../../packages/icons/src/index.ts"],
+      "@muja-ui/theme-sdu": ["../../packages/theme-sdu/src/index.ts"],
+      "@muja-ui/tokens": ["../../packages/tokens/src/index.ts"],
+      "@muja-ui/utils": ["../../packages/utils/src/index.ts"],
+      "@muja-ui/web": ["../../packages/web/src/index.ts"],
+      "@muja-ui/web/client": ["../../packages/web/src/client.ts"]
+    }
+  },
+  "include": [".storybook", "stories"]
+}

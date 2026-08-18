@@ -28,13 +28,13 @@ Design tokens → theme engine → CSS variables. One API, every platform.
 
 ## 📦 Packages
 
-| Package                                                            | What's inside                                                                               |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| Package                                                            | What's inside                                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`@muja-ui/web`](https://www.npmjs.com/package/@muja-ui/web)       | SSR-first React components: primitives (Box, Flex, Stack, Text, …), forms (Button, Input, Select, Checkbox, Switch, …), feedback (Spinner, Skeleton, Progress), layout (Card, Badge, Table, Tooltip) and client components (Avatar, Tabs, Modal via `/client`) |
-| [`@muja-ui/core`](https://www.npmjs.com/package/@muja-ui/core)     | Theme engine, CSS-variable generator, icon registry, `ThemeProvider` + hooks (`/client`)    |
-| [`@muja-ui/tokens`](https://www.npmjs.com/package/@muja-ui/tokens) | Design tokens — platform-neutral values shared by web and native                            |
-| [`@muja-ui/icons`](https://www.npmjs.com/package/@muja-ui/icons)   | Tree-shakable stroke icon set                                                               |
-| [`@muja-ui/utils`](https://www.npmjs.com/package/@muja-ui/utils)   | Framework-free helpers (`cx`, `deepMerge`, `clamp`, …)                                      |
+| [`@muja-ui/core`](https://www.npmjs.com/package/@muja-ui/core)     | Theme engine, CSS-variable generator, icon registry, `ThemeProvider` + hooks (`/client`)                                                                                                                                                                       |
+| [`@muja-ui/tokens`](https://www.npmjs.com/package/@muja-ui/tokens) | Design tokens — platform-neutral values shared by web and native                                                                                                                                                                                               |
+| [`@muja-ui/icons`](https://www.npmjs.com/package/@muja-ui/icons)   | Tree-shakable stroke icon set                                                                                                                                                                                                                                  |
+| [`@muja-ui/utils`](https://www.npmjs.com/package/@muja-ui/utils)   | Framework-free helpers (`cx`, `deepMerge`, `clamp`, …)                                                                                                                                                                                                         |
 
 ## 🚀 Quick start
 
@@ -138,6 +138,26 @@ pnpm changeset     # start a release note
 
 Releases are automated with [Changesets](https://github.com/changesets/changesets): merge the **Version Packages** PR and CI publishes to npm.
 
+## 📖 Storybook
+
+```sh
+pnpm storybook        # dev server on http://localhost:6006
+pnpm build-storybook  # static build into apps/storybook/storybook-static
+```
+
+Every component has stories, grouped as Foundations / Primitives / Forms /
+Feedback / Data Display / Layout / Overlays / Navigation / Media. Two toolbar
+controls drive the whole canvas:
+
+- **Theme** — base (`@muja-ui/core`) or SDU brand (`@muja-ui/theme-sdu`).
+- **Mode** — light or dark, applied the way an app applies it (`data-theme` on
+  `<html>`, no component re-render).
+
+Prop tables and descriptions are generated from the components' TypeScript
+interfaces, so the docs cannot drift from the API. Stories import the workspace
+**sources** (not `dist`), so `pnpm storybook` works without building first and
+edits to a component or to `styles.css` hot-reload.
+
 ## 🗺 Roadmap
 
 | Phase                             | Status                                                               |
@@ -151,7 +171,7 @@ Releases are automated with [Changesets](https://github.com/changesets/changeset
 | 7 — Primitives                    | ✅ Box, Flex, Stack, Spacer, Divider, Text, Heading, Icon            |
 | 8 — Form components               | 🟡 Button shipped; Input, Checkbox, Switch, Select next              |
 | 9–11 — Overlays, Feedback, Layout | ⏳ Planned                                                           |
-| 12 — Documentation site           | ⏳ Planned                                                           |
+| 12 — Documentation site           | 🟡 Storybook workbench shipped (`pnpm storybook`); docs site planned |
 | 13 — Testing                      | 🟡 Vitest + Testing Library; Playwright / Detox planned              |
 | 14 — Release                      | ✅ Automated npm publishing via Changesets                           |
 
