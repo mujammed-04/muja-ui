@@ -1,0 +1,53 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# muja-ui
+
+A cross-platform design system for Next.js (SSR-first) and React Native.
+This Storybook is the workbench for `@muja-ui/web`: every component, in both
+themes, in light and dark.
+
+## Using it
+
+- **Theme** (toolbar) switches between the base theme from `@muja-ui/core` and
+  the SDU Life brand theme from `@muja-ui/theme-sdu`.
+- **Mode** (toolbar) switches light/dark. It sets `data-theme` on `<html>`,
+  exactly like `<ThemeProvider>` does in an app — no component re-renders, the
+  `--mj-*` custom properties do the work.
+- **Controls** are generated from each component's TypeScript props, so the
+  prop tables are the real API.
+- **Accessibility** runs axe on the rendered story.
+
+## How the pieces fit
+
+```tsx
+// app/layout.tsx — the whole setup
+import { ThemeStyles, ColorModeScript, ThemeProvider } from '@muja-ui/web';
+import '@muja-ui/web/styles.css';
+
+<html lang="en" suppressHydrationWarning>
+  <head>
+    <ThemeStyles />
+  </head>
+  <body>
+    <ColorModeScript />
+    <ThemeProvider>{children}</ThemeProvider>
+  </body>
+</html>;
+```
+
+Server-safe components come from `@muja-ui/web`; the stateful ones (Modal,
+Tabs, Popover, Toast, …) come from `@muja-ui/web/client`. Each story's import
+line in the **Show code** panel is the one to copy.
+
+## Conventions worth knowing
+
+- Styling lives in `packages/web/src/styles.css` as `mj-*` classes plus
+  `data-*` attribute selectors. Components pass `data-variant`, `data-size`,
+  `data-invalid`, … and never inline colors.
+- Every color is a semantic token (`primary`, `surface`, `textMuted`, …), so a
+  new brand is one `createTheme()` call — see **Foundations → Colors**.
+- Layout primitives (`Box`, `Flex`, `Stack`, `Text`) take token-bound style
+  props (`p={6}`, `bg="surface"`, `radius="lg"`) that compile to
+  `var(--mj-*)` inline styles.

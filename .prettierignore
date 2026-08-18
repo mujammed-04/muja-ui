@@ -3,3 +3,4 @@ coverage/
 .turbo/
 pnpm-lock.yaml
 CHANGELOG.md
+storybook-static/

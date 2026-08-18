@@ -11,6 +11,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "storybook": "pnpm --filter @muja-ui/storybook dev",
+    "build-storybook": "pnpm --filter @muja-ui/storybook build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
