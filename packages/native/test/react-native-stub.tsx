@@ -27,12 +27,18 @@ const FLATTEN_DEPTH = 12;
 function flattenStyle(style: unknown, depth = 0): AnyProps {
   if (!style || depth > FLATTEN_DEPTH) return {};
   if (Array.isArray(style)) {
-    return style.reduce<AnyProps>((acc, entry) => ({ ...acc, ...flattenStyle(entry, depth + 1) }), {});
+    return style.reduce<AnyProps>(
+      (acc, entry) => ({ ...acc, ...flattenStyle(entry, depth + 1) }),
+      {},
+    );
   }
   // Pressable takes `style` as a function of the press state; resolve the rest
   // state so tests can assert on it.
   if (typeof style === 'function') {
-    return flattenStyle((style as (state: { pressed: boolean }) => unknown)({ pressed: false }), depth + 1);
+    return flattenStyle(
+      (style as (state: { pressed: boolean }) => unknown)({ pressed: false }),
+      depth + 1,
+    );
   }
   if (typeof style === 'object') return { ...(style as AnyProps) };
   return {};
@@ -64,7 +70,12 @@ function a11yProps({
   const state = (accessibilityState ?? {}) as A11yState;
   // A few RN role names differ from their ARIA equivalents.
   const ROLE_ALIASES: Record<string, string> = { image: 'img', header: 'heading' };
-  const value = (accessibilityValue ?? {}) as { text?: string; min?: number; max?: number; now?: number };
+  const value = (accessibilityValue ?? {}) as {
+    text?: string;
+    min?: number;
+    max?: number;
+    now?: number;
+  };
   const props: AnyProps = { ...rest };
 
   if (accessibilityRole) {
@@ -94,10 +105,12 @@ function a11yProps({
  * React warning, so the flattened style is exposed as a `data-style` JSON
  * attribute and tests read it through `styleOf()`.
  */
-function hostProps({ style, children, ...rest }: AnyProps): AnyProps {
+function hostProps({ style, children, hitSlop, ...rest }: AnyProps): AnyProps {
   const flat = flattenStyle(style);
   const props: AnyProps = { ...a11yProps(rest), children };
   if (Object.keys(flat).length > 0) props['data-style'] = JSON.stringify(flat);
+  // Not a DOM attribute; surfaced so tests can assert on the widened touch area.
+  if (hitSlop !== undefined) props['data-hit-slop'] = JSON.stringify(hitSlop);
   return props;
 }
 
@@ -168,7 +181,9 @@ export const TextInput = forwardRef<unknown, AnyProps>(function TextInput(props,
       data-rn="TextInput"
       data-style={Object.keys(flat).length > 0 ? JSON.stringify(flat) : undefined}
       value={value as string | undefined}
-      onChange={(event) => (onChangeText as ((text: string) => void) | undefined)?.(event.target.value)}
+      onChange={(event) =>
+        (onChangeText as ((text: string) => void) | undefined)?.(event.target.value)
+      }
       readOnly={editable === false}
       type={secureTextEntry ? 'password' : undefined}
       maxLength={maxLength as number | undefined}
@@ -191,11 +206,50 @@ export const StyleSheet = {
   absoluteFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 } as const,
 };
 
+type StubOS = 'ios' | 'android';
+
+/**
+ * Mutable so a test can exercise both platform branches of a component.
+ * Reset to `'ios'` in `vitest.setup.ts` after every test.
+ */
 export const Platform = {
-  OS: 'ios' as const,
-  select: <T,>(spec: { ios?: T; android?: T; native?: T; default?: T }): T | undefined =>
-    spec.ios ?? spec.native ?? spec.default,
+  OS: 'ios' as StubOS,
+  select<T>(spec: { ios?: T; android?: T; native?: T; default?: T }): T | undefined {
+    return (Platform.OS === 'ios' ? spec.ios : spec.android) ?? spec.native ?? spec.default;
+  },
 };
+
+export function __setPlatformOS(os: StubOS): void {
+  Platform.OS = os;
+}
+
+/** React Native's `Switch` — a native control, so it has no children. */
+export const Switch = forwardRef<unknown, AnyProps>(function Switch(props, ref) {
+  const {
+    value,
+    onValueChange,
+    disabled,
+    trackColor,
+    thumbColor,
+    ios_backgroundColor,
+    style,
+    ...rest
+  } = props;
+  return createElement('button', {
+    ref,
+    'data-rn': 'Switch',
+    role: 'switch',
+    'aria-checked': String(Boolean(value)),
+    'data-track': JSON.stringify(trackColor ?? null),
+    'data-thumb': thumbColor,
+    'data-ios-bg': ios_backgroundColor,
+    ...hostProps({ ...rest, style }),
+    onClick: disabled
+      ? undefined
+      : () => (onValueChange as ((v: boolean) => void) | undefined)?.(!value),
+    ...(disabled ? { disabled: true, 'data-disabled': 'true' } : {}),
+  });
+});
 
 export const Dimensions = {
   get: () => ({ width: 390, height: 844, scale: 3, fontScale: 1 }),
@@ -305,4 +359,5 @@ export default {
   StyleSheet,
   Platform,
   Animated,
+  Switch,
 };

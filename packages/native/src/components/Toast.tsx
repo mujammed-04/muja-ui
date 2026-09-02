@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { Animated, Easing, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { isIOS } from '../system/platform';
 import { shadowStyle } from '../system/styleProps';
 import { useTheme } from '../theme/ThemeProvider';
 import { Icon } from './Icon';
@@ -132,6 +133,8 @@ function ToastCard({
   const theme = useTheme();
   const tone = entry.tone ?? 'neutral';
   const enter = useRef(new Animated.Value(0)).current;
+  // iOS banners float on shadow alone; Android's card keeps its outline.
+  const ios = isIOS();
 
   useEffect(() => {
     Animated.timing(enter, {
@@ -158,8 +161,8 @@ function ToastCard({
         alignItems: 'flex-start',
         gap: theme.space[3],
         padding: theme.space[3.5],
-        borderRadius: theme.radius.lg,
-        borderWidth: theme.borderWidth.thin,
+        borderRadius: ios ? theme.radius.xl : theme.radius.lg,
+        borderWidth: ios ? 0 : theme.borderWidth.thin,
         borderColor: theme.colors.border,
         backgroundColor: theme.colors.surface,
         opacity: enter,

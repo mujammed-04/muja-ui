@@ -3,6 +3,7 @@ import { warnOnce } from '@muja-ui/utils';
 import { createContext, useContext, type ReactNode } from 'react';
 import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useControllableState } from '../internal/useControllableState';
+import { isIOS } from '../system/platform';
 import { useTheme } from '../theme/ThemeProvider';
 import { Text } from './Text';
 
@@ -141,7 +142,7 @@ export function Radio({ value, disabled = false, children, style }: RadioProps) 
       </View>
       {children != null ? (
         typeof children === 'string' ? (
-          <Text size={group.size === 'lg' ? 'md' : 'sm'} style={{ flexShrink: 1 }}>
+          <Text size={group.size === 'lg' || isIOS() ? 'md' : 'sm'} style={{ flexShrink: 1 }}>
             {children}
           </Text>
         ) : (

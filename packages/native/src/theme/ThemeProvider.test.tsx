@@ -59,6 +59,27 @@ describe('ThemeProvider', () => {
     expect(screen.getByTestId('probe').textContent).toBe('sdu-light|light|light');
   });
 
+  it('renders through the iOS metrics by default and verbatim when asked not to', () => {
+    function SizeProbe() {
+      const theme = useTheme();
+      return <span data-testid="size">{theme.typography.fontSize.md}</span>;
+    }
+    const { unmount } = render(
+      <ThemeProvider theme={sduLightTheme} defaultColorMode="light">
+        <SizeProbe />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId('size').textContent).toBe('17');
+    unmount();
+
+    render(
+      <ThemeProvider theme={sduLightTheme} defaultColorMode="light" platformAdaptive={false}>
+        <SizeProbe />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId('size').textContent).toBe('16');
+  });
+
   it('throws when a hook is used outside the provider', () => {
     // React logs the error boundary trace; silence it for this expected throw.
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});

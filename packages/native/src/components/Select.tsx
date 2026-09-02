@@ -2,6 +2,7 @@ import type { Size } from '@muja-ui/core';
 import { CheckIcon, ChevronDownIcon } from '@muja-ui/icons';
 import { useState } from 'react';
 import { Pressable, ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
+import { isIOS } from '../system/platform';
 import { sizeMetrics } from '../system/variants';
 import { useTheme } from '../theme/ThemeProvider';
 import { BottomSheet } from './BottomSheet';
@@ -56,6 +57,7 @@ export function Select<T extends string = string>({
   const metrics = sizeMetrics(size, theme);
   const [open, setOpen] = useState(false);
   const selected = options.find((option) => option.value === value);
+  const ios = isIOS();
 
   return (
     <>
@@ -73,12 +75,25 @@ export function Select<T extends string = string>({
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: metrics.gap,
-            height: metrics.height,
+            minHeight: metrics.height,
             paddingHorizontal: metrics.paddingHorizontal,
             borderRadius: theme.radius.md,
-            borderWidth: invalid ? theme.borderWidth.medium : theme.borderWidth.thin,
+            // Mirrors Input: iOS is a filled rect that only gains a stroke when invalid.
+            borderWidth: invalid
+              ? ios
+                ? theme.borderWidth.thin
+                : theme.borderWidth.medium
+              : ios
+                ? 0
+                : theme.borderWidth.thin,
             borderColor: invalid ? theme.colors.danger : theme.colors.border,
-            backgroundColor: disabled ? theme.colors.bgMuted : theme.colors.surface,
+            backgroundColor: ios
+              ? disabled
+                ? theme.colors.bgSubtle
+                : theme.colors.bgMuted
+              : disabled
+                ? theme.colors.bgMuted
+                : theme.colors.surface,
             opacity: disabled ? theme.opacity.disabled : 1,
           },
           style,

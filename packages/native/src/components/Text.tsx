@@ -14,6 +14,7 @@ import {
   type TextStyle,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
+import { nativeFontFamily } from '../system/font';
 import { splitStyleProps, type StyleProps } from '../system/styleProps';
 
 export interface TextOwnProps {
@@ -36,7 +37,9 @@ export type TextProps = TextOwnProps &
 /**
  * Typography primitive. Color always comes from a semantic token, never a raw
  * value. React Native needs an absolute `lineHeight`, so the unitless token
- * multiplier is resolved against the font size here.
+ * multiplier is resolved against the font size here, and the theme's CSS font
+ * stack is reduced to the one family the platform can load (see
+ * `nativeFontFamily`) — the system font unless the theme names a brand face.
  *
  * ```tsx
  * <Text size="sm" color="textSecondary" truncate>…</Text>
@@ -58,17 +61,16 @@ export const Text = forwardRef<RNText, TextProps>(function Text(props, ref) {
     ...restProps
   } = props;
 
-  const { style: tokenStyle, rest } = splitStyleProps(
-    restProps as Record<string, unknown>,
-    theme,
-  );
+  const { style: tokenStyle, rest } = splitStyleProps(restProps as Record<string, unknown>, theme);
 
   const fontSize = theme.typography.fontSize[size];
   const textStyle: TextStyle = {
-    fontFamily: theme.typography.fontFamily[family],
+    fontFamily: nativeFontFamily(theme.typography.fontFamily[family]),
     fontSize,
     color: theme.colors[color],
-    fontWeight: weight ? (theme.typography.fontWeight[weight] as TextStyle['fontWeight']) : undefined,
+    fontWeight: weight
+      ? (theme.typography.fontWeight[weight] as TextStyle['fontWeight'])
+      : undefined,
     lineHeight: leading ? Math.round(fontSize * theme.typography.lineHeight[leading]) : undefined,
     letterSpacing: tracking ? theme.typography.letterSpacing[tracking] : undefined,
     textAlign: align,

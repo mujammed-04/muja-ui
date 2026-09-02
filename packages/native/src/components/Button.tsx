@@ -9,7 +9,7 @@ import {
   type View as RNView,
   type ViewStyle,
 } from 'react-native';
-import { sizeMetrics, variantColors } from '../system/variants';
+import { pressFeedback, sizeMetrics, variantColors } from '../system/variants';
 import { useTheme } from '../theme/ThemeProvider';
 import { Text } from './Text';
 
@@ -29,7 +29,9 @@ export interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> 
 
 /**
  * Pressable button. Same variant/size vocabulary as `@muja-ui/web`'s Button;
- * every color resolves from a semantic theme token.
+ * every color resolves from a semantic theme token. Heights are minimums so
+ * the label can grow with Dynamic Type; a `sm` button widens its touch area
+ * to the 44pt floor.
  *
  * ```tsx
  * <Button variant="primary" size="lg" loading onPress={save}>Save</Button>
@@ -56,6 +58,7 @@ export const Button = forwardRef<RNView, ButtonProps>(function Button(
   const metrics = sizeMetrics(size, theme);
   const isInert = disabled || loading;
   const isLink = variant === 'link';
+  const slop = metrics.height < 44 ? (44 - metrics.height) / 2 : 0;
 
   return (
     <Pressable
@@ -64,23 +67,27 @@ export const Button = forwardRef<RNView, ButtonProps>(function Button(
       accessibilityState={{ disabled: isInert, busy: loading }}
       accessibilityLabel={accessibilityLabel}
       disabled={isInert}
-      style={({ pressed }) => [
-        {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: metrics.gap,
-          height: isLink ? undefined : metrics.height,
-          paddingHorizontal: isLink ? 0 : metrics.paddingHorizontal,
-          borderRadius: isLink ? 0 : theme.radius.md,
-          backgroundColor: pressed ? colors.backgroundPressed : colors.background,
-          borderColor: colors.borderColor,
-          borderWidth: colors.borderWidth,
-          alignSelf: fullWidth ? 'stretch' : 'flex-start',
-          opacity: isInert ? theme.opacity.disabled : 1,
-        },
-        style,
-      ]}
+      hitSlop={slop > 0 ? { top: slop, bottom: slop } : undefined}
+      style={({ pressed }) => {
+        const feedback = pressFeedback(pressed, colors);
+        return [
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: metrics.gap,
+            minHeight: isLink ? undefined : metrics.height,
+            paddingHorizontal: isLink ? 0 : metrics.paddingHorizontal,
+            borderRadius: isLink ? 0 : size === 'lg' ? theme.radius.lg : theme.radius.md,
+            backgroundColor: feedback.backgroundColor,
+            borderColor: colors.borderColor,
+            borderWidth: colors.borderWidth,
+            alignSelf: fullWidth ? 'stretch' : 'flex-start',
+            opacity: isInert ? theme.opacity.disabled : feedback.opacity,
+          },
+          style,
+        ];
+      }}
       {...rest}
     >
       {loading ? (
