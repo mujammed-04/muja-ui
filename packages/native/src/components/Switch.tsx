@@ -1,7 +1,8 @@
 import type { Size } from '@muja-ui/core';
 import type { ReactNode } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, Switch as RNSwitch, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useControllableState } from '../internal/useControllableState';
+import { isIOS } from '../system/platform';
 import { useTheme } from '../theme/ThemeProvider';
 import { Text } from './Text';
 
@@ -21,10 +22,16 @@ const track: Record<Size, { width: number; height: number; thumb: number }> = {
   lg: { width: 52, height: 32, thumb: 28 },
 };
 
+/** UISwitch is a fixed 51×31; `sm` scales it down, `lg` stays native size. */
+const iosScale: Record<Size, number> = { sm: 0.8, md: 1, lg: 1 };
+
 /**
- * Toggle switch. Built from primitives rather than RN's `Switch` so it follows
- * the theme on both platforms (RN's own switch only takes raw colors and
- * renders with platform-specific metrics).
+ * Toggle switch.
+ *
+ * On iOS this is the real `UISwitch` (through React Native's `Switch`), tinted
+ * with the theme's primary colour — native motion, haptics and VoiceOver
+ * semantics for free, as the HIG asks. Elsewhere it is drawn from primitives so
+ * it follows the theme's metrics on both platforms.
  *
  * ```tsx
  * <Switch checked={enabled} onChange={setEnabled}>Notifications</Switch>
@@ -40,11 +47,46 @@ export function Switch({
   style,
 }: SwitchProps) {
   const theme = useTheme();
-  const [checked, setChecked] = useControllableState(
-    controlledChecked,
-    defaultChecked,
-    onChange,
-  );
+  const [checked, setChecked] = useControllableState(controlledChecked, defaultChecked, onChange);
+
+  const row: ViewStyle = {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.space[3],
+  };
+
+  if (isIOS()) {
+    const label = typeof children === 'string' ? children : undefined;
+    const scale = iosScale[size];
+    return (
+      <View style={[row, style]}>
+        {children != null ? (
+          label !== undefined ? (
+            <Text
+              size="md"
+              style={{ flexShrink: 1, opacity: disabled ? theme.opacity.disabled : 1 }}
+            >
+              {label}
+            </Text>
+          ) : (
+            children
+          )
+        ) : null}
+        <RNSwitch
+          value={checked}
+          onValueChange={setChecked}
+          disabled={disabled}
+          accessibilityLabel={label}
+          trackColor={{ false: theme.colors.secondaryActive, true: theme.colors.primary }}
+          thumbColor={theme.colors.onPrimary}
+          ios_backgroundColor={theme.colors.secondaryActive}
+          style={scale !== 1 ? { transform: [{ scale }] } : undefined}
+        />
+      </View>
+    );
+  }
+
   const metrics = track[size];
   const inset = (metrics.height - metrics.thumb) / 2;
 
@@ -54,16 +96,7 @@ export function Switch({
       accessibilityState={{ checked, disabled }}
       disabled={disabled}
       onPress={() => setChecked(!checked)}
-      style={[
-        {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: theme.space[3],
-          opacity: disabled ? theme.opacity.disabled : 1,
-        },
-        style,
-      ]}
+      style={[row, { opacity: disabled ? theme.opacity.disabled : 1 }, style]}
     >
       {children != null ? (
         typeof children === 'string' ? (

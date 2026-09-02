@@ -5,15 +5,9 @@ import {
   type ResolvedColorMode,
   type Theme,
 } from '@muja-ui/core';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
+import { adaptThemeToPlatform } from '../system/platform';
 
 export interface ThemeContextValue {
   /** The active theme for the resolved color mode. */
@@ -42,12 +36,19 @@ export interface ThemeProviderProps {
    */
   colorMode?: ColorMode;
   onColorModeChange?: (mode: ColorMode) => void;
+  /**
+   * Lay the platform's own metrics over the theme — on iOS the HIG type scale
+   * (Body 17, Footnote 13…) and UIKit radii. Colors are never touched. Defaults
+   * to true; turn off to render the shared tokens verbatim on every platform.
+   */
+  platformAdaptive?: boolean;
   children: ReactNode;
 }
 
 /**
  * Provides the resolved theme to every native component. `'system'` follows the
- * OS appearance through React Native's `useColorScheme()`.
+ * OS appearance through React Native's `useColorScheme()`. On iOS the theme is
+ * rendered through Apple HIG metrics (see `adaptThemeToPlatform`).
  *
  * ```tsx
  * <ThemeProvider theme={sduLightTheme} darkTheme={sduDarkTheme}>
@@ -61,6 +62,7 @@ export function ThemeProvider({
   defaultColorMode = 'system',
   colorMode: colorModeProp,
   onColorModeChange,
+  platformAdaptive = true,
   children,
 }: ThemeProviderProps) {
   const [uncontrolledMode, setUncontrolledMode] = useState<ColorMode>(defaultColorMode);
@@ -82,15 +84,21 @@ export function ThemeProvider({
     setColorMode(resolvedColorMode === 'dark' ? 'light' : 'dark');
   }, [resolvedColorMode, setColorMode]);
 
+  const activeTheme = resolvedColorMode === 'dark' ? darkTheme : theme;
+  const renderedTheme = useMemo(
+    () => (platformAdaptive ? adaptThemeToPlatform(activeTheme) : activeTheme),
+    [activeTheme, platformAdaptive],
+  );
+
   const value = useMemo<ThemeContextValue>(
     () => ({
-      theme: resolvedColorMode === 'dark' ? darkTheme : theme,
+      theme: renderedTheme,
       colorMode,
       resolvedColorMode,
       setColorMode,
       toggleColorMode,
     }),
-    [theme, darkTheme, colorMode, resolvedColorMode, setColorMode, toggleColorMode],
+    [renderedTheme, colorMode, resolvedColorMode, setColorMode, toggleColorMode],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

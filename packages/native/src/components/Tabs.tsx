@@ -1,6 +1,8 @@
 import { ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Pressable } from 'react-native';
 import { useControllableState } from '../internal/useControllableState';
+import { isIOS } from '../system/platform';
+import { shadowStyle } from '../system/styleProps';
 import { useTheme } from '../theme/ThemeProvider';
 import { Text } from './Text';
 
@@ -29,6 +31,9 @@ export interface TabsProps<T extends string = string> {
  * because native screens usually swap whole lists rather than mounting all
  * panels at once.
  *
+ * On iOS `segmented` is drawn as a `UISegmentedControl`: a 2pt inset track,
+ * the selected segment lifted on a white pill with a soft shadow, 13pt labels.
+ *
  * ```tsx
  * <Tabs items={tabs} value={tab} onChange={setTab} variant="segmented" />
  * ```
@@ -51,6 +56,7 @@ export function Tabs<T extends string = string>({
   );
 
   const isSegmented = variant === 'segmented';
+  const iosSegmented = isSegmented && isIOS();
 
   const tabs = items.map((item) => {
     const selected = item.value === value;
@@ -66,18 +72,26 @@ export function Tabs<T extends string = string>({
           alignItems: 'center',
           justifyContent: 'center',
           gap: theme.space[1.5],
+          minHeight: iosSegmented ? 28 : undefined,
           paddingHorizontal: theme.space[3],
-          paddingVertical: isSegmented ? theme.space[2] : theme.space[3],
-          borderRadius: isSegmented ? theme.radius.md : 0,
+          paddingVertical: iosSegmented
+            ? theme.space[1]
+            : isSegmented
+              ? theme.space[2]
+              : theme.space[3],
+          borderRadius: iosSegmented ? theme.radius.md - 2 : isSegmented ? theme.radius.md : 0,
           backgroundColor: isSegmented && selected ? theme.colors.surface : 'transparent',
           borderBottomWidth: isSegmented ? 0 : theme.borderWidth.medium,
           borderBottomColor: selected ? theme.colors.primary : 'transparent',
+          ...(iosSegmented && selected ? shadowStyle(theme.shadow.sm) : null),
         }}
       >
         <Text
-          size="sm"
+          size={iosSegmented ? 'xs' : 'sm'}
           weight={selected ? 'semibold' : 'medium'}
-          color={selected ? (isSegmented ? 'text' : 'primaryText') : 'textMuted'}
+          color={
+            selected ? (isSegmented ? 'text' : 'primaryText') : iosSegmented ? 'text' : 'textMuted'
+          }
           numberOfLines={1}
         >
           {item.label}
@@ -91,19 +105,26 @@ export function Tabs<T extends string = string>({
     );
   });
 
-  const container: ViewStyle = isSegmented
+  const container: ViewStyle = iosSegmented
     ? {
         flexDirection: 'row',
-        gap: theme.space[1],
-        padding: theme.space[1],
-        borderRadius: theme.radius.lg,
+        padding: theme.space[0.5],
+        borderRadius: theme.radius.md,
         backgroundColor: theme.colors.bgMuted,
       }
-    : {
-        flexDirection: 'row',
-        borderBottomWidth: theme.borderWidth.thin,
-        borderBottomColor: theme.colors.border,
-      };
+    : isSegmented
+      ? {
+          flexDirection: 'row',
+          gap: theme.space[1],
+          padding: theme.space[1],
+          borderRadius: theme.radius.lg,
+          backgroundColor: theme.colors.bgMuted,
+        }
+      : {
+          flexDirection: 'row',
+          borderBottomWidth: theme.borderWidth.thin,
+          borderBottomColor: theme.colors.border,
+        };
 
   if (scrollable) {
     return (
@@ -120,7 +141,11 @@ export function Tabs<T extends string = string>({
   }
 
   return (
-    <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} style={[container, style]}>
+    <View
+      accessibilityRole="tablist"
+      accessibilityLabel={accessibilityLabel}
+      style={[container, style]}
+    >
       {tabs}
     </View>
   );

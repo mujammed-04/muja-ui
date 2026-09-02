@@ -5,11 +5,13 @@ import {
   Modal as RNModal,
   Pressable,
   ScrollView,
+  StyleSheet,
   View,
   useWindowDimensions,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { isIOS } from '../system/platform';
 import { useTheme } from '../theme/ThemeProvider';
 import { Heading } from './Heading';
 import { Icon } from './Icon';
@@ -160,6 +162,7 @@ export function ModalBody({ children, scrollable = true, style }: ModalBodyProps
   );
 }
 
+/** Action row. On iOS a hairline separates it from the body, as in an alert. */
 export function ModalFooter({
   children,
   style,
@@ -168,6 +171,7 @@ export function ModalFooter({
   style?: StyleProp<ViewStyle>;
 }) {
   const theme = useTheme();
+  const ios = isIOS();
   return (
     <View
       style={[
@@ -176,8 +180,10 @@ export function ModalFooter({
           justifyContent: 'flex-end',
           gap: theme.space[2],
           paddingHorizontal: theme.space[5],
-          paddingTop: theme.space[3],
+          paddingTop: ios ? theme.space[4] : theme.space[3],
           paddingBottom: theme.space[5],
+          borderTopWidth: ios ? StyleSheet.hairlineWidth : 0,
+          borderTopColor: theme.colors.border,
         },
         style,
       ]}

@@ -3,6 +3,7 @@ import { CheckIcon, MinusIcon } from '@muja-ui/icons';
 import type { ReactNode } from 'react';
 import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useControllableState } from '../internal/useControllableState';
+import { isIOS } from '../system/platform';
 import { useTheme } from '../theme/ThemeProvider';
 import { Icon } from './Icon';
 import { Text } from './Text';
@@ -28,7 +29,9 @@ export interface CheckboxProps {
 const boxSize: Record<Size, number> = { sm: 18, md: 22, lg: 26 };
 
 /**
- * Checkbox with an optional inline label.
+ * Checkbox with an optional inline label. iOS has no square checkbox — the
+ * idiom (Reminders, Mail's edit mode) is a circle that fills with a tick — so
+ * the box is round there and square elsewhere.
  *
  * ```tsx
  * <Checkbox checked={agreed} onChange={setAgreed}>I agree</Checkbox>
@@ -46,13 +49,10 @@ export function Checkbox({
   style,
 }: CheckboxProps) {
   const theme = useTheme();
-  const [checked, setChecked] = useControllableState(
-    controlledChecked,
-    defaultChecked,
-    onChange,
-  );
+  const [checked, setChecked] = useControllableState(controlledChecked, defaultChecked, onChange);
   const dimension = boxSize[size];
   const filled = checked || indeterminate;
+  const ios = isIOS();
 
   return (
     <Pressable
@@ -80,7 +80,7 @@ export function Checkbox({
           height: dimension,
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: theme.radius.sm,
+          borderRadius: ios ? theme.radius.full : theme.radius.sm,
           borderWidth: theme.borderWidth.medium,
           borderColor: invalid
             ? theme.colors.danger
@@ -101,7 +101,7 @@ export function Checkbox({
       </View>
       {children != null ? (
         typeof children === 'string' ? (
-          <Text size={size === 'lg' ? 'md' : 'sm'} style={{ flexShrink: 1 }}>
+          <Text size={size === 'lg' || ios ? 'md' : 'sm'} style={{ flexShrink: 1 }}>
             {children}
           </Text>
         ) : (

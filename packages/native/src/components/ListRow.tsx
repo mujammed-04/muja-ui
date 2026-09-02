@@ -1,6 +1,7 @@
 import { ChevronRightIcon } from '@muja-ui/icons';
 import type { ReactNode } from 'react';
 import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { isIOS } from '../system/platform';
 import { useTheme } from '../theme/ThemeProvider';
 import { Icon } from './Icon';
 import { Text } from './Text';
@@ -22,7 +23,8 @@ export interface ListRowProps {
 
 /**
  * Settings/list row: leading slot, two lines of text, trailing slot. Pressable
- * rows get a chevron and a button role.
+ * rows get a chevron and a button role. On iOS the row follows a table cell:
+ * 44pt minimum, body-size title, secondary-label subtitle, bold chevron.
  *
  * ```tsx
  * <ListRow title="Notifications" subtitle="Push and email" onPress={open} />
@@ -39,6 +41,7 @@ export function ListRow({
   style,
 }: ListRowProps) {
   const theme = useTheme();
+  const ios = isIOS();
 
   const content = (
     <>
@@ -48,14 +51,19 @@ export function ListRow({
           {title}
         </Text>
         {subtitle ? (
-          <Text size="sm" color="textMuted" numberOfLines={2}>
+          <Text size="sm" color={ios ? 'textSecondary' : 'textMuted'} numberOfLines={2}>
             {subtitle}
           </Text>
         ) : null}
       </View>
       {right ??
         (onPress && !hideChevron ? (
-          <Icon icon={ChevronRightIcon} size={18} color="textMuted" />
+          <Icon
+            icon={ChevronRightIcon}
+            size={ios ? 16 : 18}
+            strokeWidth={ios ? 2.5 : 2}
+            color="textMuted"
+          />
         ) : null)}
     </>
   );
@@ -65,8 +73,8 @@ export function ListRow({
     alignItems: 'center',
     gap: theme.space[3],
     paddingHorizontal: theme.space[4],
-    paddingVertical: theme.space[3.5],
-    minHeight: 56,
+    paddingVertical: ios ? theme.space[2.5] : theme.space[3.5],
+    minHeight: ios ? 44 : 56,
     opacity: disabled ? theme.opacity.disabled : 1,
   };
 

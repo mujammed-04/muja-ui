@@ -8,7 +8,7 @@ import {
   type View as RNView,
   type ViewStyle,
 } from 'react-native';
-import { variantColors } from '../system/variants';
+import { pressFeedback, variantColors } from '../system/variants';
 import { useTheme } from '../theme/ThemeProvider';
 
 export interface IconButtonProps extends Omit<PressableProps, 'style' | 'children'> {
@@ -59,27 +59,26 @@ export const IconButton = forwardRef<RNView, IconButtonProps>(function IconButto
       disabled={isInert}
       // Icon-only targets are small; widen the touch area to the 44pt minimum.
       hitSlop={dimension < 44 ? (44 - dimension) / 2 : undefined}
-      style={({ pressed }) => [
-        {
-          width: dimension,
-          height: dimension,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: round ? theme.radius.full : theme.radius.md,
-          backgroundColor: pressed ? colors.backgroundPressed : colors.background,
-          borderColor: colors.borderColor,
-          borderWidth: colors.borderWidth,
-          opacity: isInert ? theme.opacity.disabled : 1,
-        },
-        style,
-      ]}
+      style={({ pressed }) => {
+        const feedback = pressFeedback(pressed, colors);
+        return [
+          {
+            width: dimension,
+            height: dimension,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: round ? theme.radius.full : theme.radius.md,
+            backgroundColor: feedback.backgroundColor,
+            borderColor: colors.borderColor,
+            borderWidth: colors.borderWidth,
+            opacity: isInert ? theme.opacity.disabled : feedback.opacity,
+          },
+          style,
+        ];
+      }}
       {...rest}
     >
-      {loading ? (
-        <ActivityIndicator size="small" color={theme.colors[colors.foreground]} />
-      ) : (
-        icon
-      )}
+      {loading ? <ActivityIndicator size="small" color={theme.colors[colors.foreground]} /> : icon}
     </Pressable>
   );
 });

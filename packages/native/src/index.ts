@@ -94,7 +94,15 @@ export {
 
 // Style system
 export { shadowStyle, splitStyleProps, type StyleProps } from './system/styleProps';
-export { sizeMetrics, variantColors, type SizeMetrics, type VariantColors } from './system/variants';
+export {
+  pressFeedback,
+  sizeMetrics,
+  variantColors,
+  type SizeMetrics,
+  type VariantColors,
+} from './system/variants';
+export { adaptThemeToPlatform, iosThemeOverride, isIOS } from './system/platform';
+export { nativeFontFamily } from './system/font';
 
 // Date helpers the Calendar is built on — screens need the same whole-day math.
 export {

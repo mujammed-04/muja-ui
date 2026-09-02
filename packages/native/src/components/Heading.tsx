@@ -1,6 +1,7 @@
 import type { FontSizeToken } from '@muja-ui/tokens';
 import { forwardRef } from 'react';
 import type { Text as RNText } from 'react-native';
+import { isIOS } from '../system/platform';
 import { Text, type TextProps } from './Text';
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
@@ -21,23 +22,25 @@ const defaultSize: Record<HeadingLevel, FontSizeToken> = {
 
 /**
  * A heading with the correct accessibility role. Sizes follow the level unless
- * `size` overrides them.
+ * `size` overrides them. On iOS the two top levels are bold, matching Large
+ * Title / Title 1; the rest are semibold like Headline.
  *
  * ```tsx
  * <Heading level={2}>Upcoming events</Heading>
  * ```
  */
 export const Heading = forwardRef<RNText, HeadingProps>(function Heading(
-  { level = 2, size, weight = 'semibold', leading = 'tight', ...rest },
+  { level = 2, size, weight, leading = 'tight', ...rest },
   ref,
 ) {
+  const resolvedWeight = weight ?? (isIOS() && level <= 2 ? 'bold' : 'semibold');
   return (
     <Text
       ref={ref}
       accessibilityRole="header"
       aria-level={level}
       size={size ?? defaultSize[level]}
-      weight={weight}
+      weight={resolvedWeight}
       leading={leading}
       {...rest}
     />

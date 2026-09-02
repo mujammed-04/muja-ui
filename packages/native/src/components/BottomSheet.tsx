@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import {
   Animated,
-  Easing,
   Modal as RNModal,
   PanResponder,
   Pressable,
@@ -12,6 +11,8 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSheetTransition } from '../internal/useSheetTransition';
+import { isIOS, sheetSpring } from '../system/platform';
 import { useTheme } from '../theme/ThemeProvider';
 import { Heading } from './Heading';
 
@@ -34,8 +35,9 @@ export interface BottomSheetProps {
 
 /**
  * Sheet that slides up from the bottom edge, with a grab handle and
- * drag-to-dismiss. The bottom inset is padded so content clears the home
- * indicator.
+ * drag-to-dismiss. It arrives on a spring with a fading backdrop, the way a
+ * UIKit sheet is presented, and the bottom inset is padded so content clears
+ * the home indicator. On iOS the grabber matches the system's 36×5.
  *
  * ```tsx
  * <BottomSheet open={open} onClose={close} title="Pick a room">…</BottomSheet>
@@ -54,17 +56,9 @@ export function BottomSheet({
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
-  const translateY = useRef(new Animated.Value(height)).current;
+  const { translateY, backdrop } = useSheetTransition(open, height);
   const dragY = useRef(0);
-
-  useEffect(() => {
-    Animated.timing(translateY, {
-      toValue: open ? 0 : height,
-      duration: open ? theme.motion.duration.normal : theme.motion.duration.fast,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  }, [open, height, translateY, theme.motion.duration]);
+  const ios = isIOS();
 
   const panResponder = useRef(
     PanResponder.create({
@@ -79,7 +73,11 @@ export function BottomSheet({
         if (dragY.current > DISMISS_THRESHOLD) {
           onClose();
         } else {
-          Animated.spring(translateY, { toValue: 0, useNativeDriver: true }).start();
+          Animated.spring(translateY, {
+            toValue: 0,
+            ...sheetSpring,
+            useNativeDriver: true,
+          }).start();
         }
         dragY.current = 0;
       },
@@ -95,11 +93,15 @@ export function BottomSheet({
       onRequestClose={onClose}
     >
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <Pressable
-          accessibilityLabel={closeOnOverlayPress ? 'Close' : undefined}
-          onPress={closeOnOverlayPress ? onClose : undefined}
-          style={{ flex: 1, backgroundColor: theme.colors.overlay }}
-        />
+        <Animated.View
+          style={{ flex: 1, backgroundColor: theme.colors.overlay, opacity: backdrop }}
+        >
+          <Pressable
+            accessibilityLabel={closeOnOverlayPress ? 'Close' : undefined}
+            onPress={closeOnOverlayPress ? onClose : undefined}
+            style={{ flex: 1 }}
+          />
+        </Animated.View>
         <Animated.View
           accessibilityViewIsModal
           accessibilityLabel={accessibilityLabel ?? title}
@@ -115,12 +117,15 @@ export function BottomSheet({
             style,
           ]}
         >
-          <View {...panResponder.panHandlers} style={{ paddingTop: theme.space[3] }}>
+          <View
+            {...panResponder.panHandlers}
+            style={{ paddingTop: ios ? theme.space[1.5] : theme.space[3] }}
+          >
             <View
               style={{
                 alignSelf: 'center',
-                width: 40,
-                height: 4,
+                width: ios ? 36 : 40,
+                height: ios ? 5 : 4,
                 borderRadius: theme.radius.full,
                 backgroundColor: theme.colors.borderStrong,
               }}

@@ -1,13 +1,8 @@
 import type { SemanticColorToken } from '@muja-ui/tokens';
 import type { ReactNode } from 'react';
-import {
-  RefreshControl,
-  ScrollView,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { RefreshControl, ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { isIOS } from '../system/platform';
 import { useTheme } from '../theme/ThemeProvider';
 
 export interface ScreenProps {
@@ -69,6 +64,8 @@ export function Screen({
       style={[{ flex: 1, backgroundColor: theme.colors[bg] }, style]}
       contentContainerStyle={[padding, contentContainerStyle]}
       keyboardShouldPersistTaps="handled"
+      // iOS lets the keyboard follow the finger down; Android has no such mode.
+      keyboardDismissMode={isIOS() ? 'interactive' : 'on-drag'}
       refreshControl={
         onRefresh ? (
           <RefreshControl

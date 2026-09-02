@@ -1,14 +1,10 @@
 import type { Size } from '@muja-ui/core';
 import { forwardRef, useState, type ReactNode } from 'react';
-import {
-  TextInput,
-  View,
-  type StyleProp,
-  type TextInputProps,
-  type ViewStyle,
-} from 'react-native';
+import { TextInput, View, type StyleProp, type TextInputProps, type ViewStyle } from 'react-native';
+import { nativeFontFamily } from '../system/font';
+import { isIOS } from '../system/platform';
 import { sizeMetrics } from '../system/variants';
-import { useTheme } from '../theme/ThemeProvider';
+import { useColorMode, useTheme } from '../theme/ThemeProvider';
 
 export interface InputProps extends Omit<TextInputProps, 'style' | 'editable'> {
   size?: Size;
@@ -25,6 +21,11 @@ export interface InputProps extends Omit<TextInputProps, 'style' | 'editable'> {
 /**
  * Single-line text field. Focus and invalid states are drawn on the wrapper so
  * adornments sit inside the border.
+ *
+ * On iOS the field is a filled, borderless rounded rect like a UIKit search
+ * field or grouped-list cell; a stroke appears only for focus and errors. The
+ * keyboard follows the color mode and shows the native clear button while
+ * editing (unless a `rightElement` occupies that spot).
  *
  * ```tsx
  * <Input size="md" placeholder="Email" invalid={!!error} />
@@ -45,14 +46,30 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
   ref,
 ) {
   const theme = useTheme();
+  const { resolvedColorMode } = useColorMode();
   const metrics = sizeMetrics(size, theme);
   const [focused, setFocused] = useState(false);
+  const ios = isIOS();
 
   const borderColor = invalid
     ? theme.colors.danger
     : focused
       ? theme.colors.focusRing
       : theme.colors.border;
+  const borderWidth = ios
+    ? focused || invalid
+      ? theme.borderWidth.thin
+      : 0
+    : focused || invalid
+      ? theme.borderWidth.medium
+      : theme.borderWidth.thin;
+  const backgroundColor = ios
+    ? disabled
+      ? theme.colors.bgSubtle
+      : theme.colors.bgMuted
+    : disabled
+      ? theme.colors.bgMuted
+      : theme.colors.surface;
 
   return (
     <View
@@ -61,12 +78,12 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           flexDirection: 'row',
           alignItems: 'center',
           gap: metrics.gap,
-          height: metrics.height,
+          minHeight: metrics.height,
           paddingHorizontal: metrics.paddingHorizontal,
           borderRadius: theme.radius.md,
-          borderWidth: focused || invalid ? theme.borderWidth.medium : theme.borderWidth.thin,
+          borderWidth,
           borderColor,
-          backgroundColor: disabled ? theme.colors.bgMuted : theme.colors.surface,
+          backgroundColor,
         },
         style,
       ]}
@@ -79,6 +96,8 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
         aria-disabled={disabled || undefined}
         placeholderTextColor={theme.colors.textMuted}
         selectionColor={theme.colors.primary}
+        keyboardAppearance={resolvedColorMode}
+        clearButtonMode={ios && !rightElement ? 'while-editing' : undefined}
         onFocus={(event) => {
           setFocused(true);
           onFocus?.(event);
@@ -89,9 +108,9 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
         }}
         style={{
           flex: 1,
-          // Android adds its own vertical padding; zero it so `height` wins.
+          // Android adds its own vertical padding; zero it so `minHeight` wins.
           paddingVertical: 0,
-          fontFamily: theme.typography.fontFamily.sans,
+          fontFamily: nativeFontFamily(theme.typography.fontFamily.sans),
           fontSize: theme.typography.fontSize[metrics.fontSize],
           color: disabled ? theme.colors.textDisabled : theme.colors.text,
         }}

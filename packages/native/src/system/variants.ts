@@ -1,5 +1,7 @@
 import type { Size, Theme, Variant } from '@muja-ui/core';
 import type { SemanticColorToken } from '@muja-ui/tokens';
+import type { ViewStyle } from 'react-native';
+import { IOS_PRESSED_OPACITY, isIOS } from './platform';
 
 /** Resolved colors for one interactive variant, in its rest and pressed states. */
 export interface VariantColors {
@@ -16,9 +18,14 @@ export interface VariantColors {
  * Maps a `Variant` onto semantic theme colors. Web does this in CSS via
  * `data-variant` selectors; native resolves it here so both platforms answer
  * `variant="accent"` with the same roles.
+ *
+ * On iOS the two chrome-less variants follow UIKit's button configurations:
+ * `outline` renders as *tinted* (a soft primary fill, no stroke — iOS has no
+ * stroked buttons) and `ghost` as *plain* (tint-coloured label).
  */
 export function variantColors(variant: Variant, theme: Theme): VariantColors {
   const { colors, borderWidth } = theme;
+  const ios = isIOS();
   switch (variant) {
     case 'primary':
       return {
@@ -45,6 +52,13 @@ export function variantColors(variant: Variant, theme: Theme): VariantColors {
         foreground: 'onDanger',
       };
     case 'outline':
+      if (ios) {
+        return {
+          background: colors.primarySubtle,
+          backgroundPressed: colors.primarySubtleHover,
+          foreground: 'primaryText',
+        };
+      }
       return {
         background: 'transparent',
         backgroundPressed: colors.surfaceActive,
@@ -55,8 +69,8 @@ export function variantColors(variant: Variant, theme: Theme): VariantColors {
     case 'ghost':
       return {
         background: 'transparent',
-        backgroundPressed: colors.surfaceActive,
-        foreground: 'text',
+        backgroundPressed: ios ? 'transparent' : colors.surfaceActive,
+        foreground: ios ? 'primaryText' : 'text',
       };
     case 'link':
       return {
@@ -68,7 +82,24 @@ export function variantColors(variant: Variant, theme: Theme): VariantColors {
   }
 }
 
-/** Control geometry per size — shared by Button, Input, Select and Textarea. */
+/**
+ * Background and opacity for a button-like pressable in its current state.
+ * iOS dims the whole control (UIKit's highlight); Android swaps to the pressed
+ * colour. Rows and cells are different — they highlight with a background on
+ * both platforms, so they don't use this.
+ */
+export function pressFeedback(pressed: boolean, colors: VariantColors): ViewStyle {
+  if (!pressed) return { backgroundColor: colors.background, opacity: 1 };
+  return isIOS()
+    ? { backgroundColor: colors.background, opacity: IOS_PRESSED_OPACITY }
+    : { backgroundColor: colors.backgroundPressed, opacity: 1 };
+}
+
+/**
+ * Control geometry per size — shared by Button, Input, Select and Textarea.
+ * `height` is a minimum: controls grow with Dynamic Type / font scaling
+ * instead of clipping their label.
+ */
 export interface SizeMetrics {
   height: number;
   paddingHorizontal: number;
