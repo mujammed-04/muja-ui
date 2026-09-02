@@ -24,7 +24,8 @@ export interface ScreenProps {
 
 /**
  * Screen shell: safe-area padding, themed background and optional scrolling
- * with pull-to-refresh. Every route in an app should start with one.
+ * with pull-to-refresh. Every route in an app should start with one. A
+ * scrollable Screen keeps focused inputs above the keyboard on iOS.
  *
  * ```tsx
  * <Screen scrollable refreshing={isRefetching} onRefresh={refetch}>
@@ -64,8 +65,11 @@ export function Screen({
       style={[{ flex: 1, backgroundColor: theme.colors[bg] }, style]}
       contentContainerStyle={[padding, contentContainerStyle]}
       keyboardShouldPersistTaps="handled"
-      // iOS lets the keyboard follow the finger down; Android has no such mode.
+      // iOS lets the keyboard follow the finger down, and scroll views inset
+      // themselves for it so a focused field is never hidden behind it. Android
+      // resizes the window instead (adjustResize) and has no such mode.
       keyboardDismissMode={isIOS() ? 'interactive' : 'on-drag'}
+      automaticallyAdjustKeyboardInsets={isIOS()}
       refreshControl={
         onRefresh ? (
           <RefreshControl

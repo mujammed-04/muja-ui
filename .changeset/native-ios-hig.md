@@ -13,4 +13,4 @@ Render like a native iOS app on iOS, following the Apple Human Interface Guideli
 - **Tabs `segmented`** is drawn as a `UISegmentedControl` on iOS.
 - **ActionSheet** takes the `UIAlertController` form on iOS: inset grouped cards, centred tint-coloured rows, red destructive rows, a separate bold Cancel card.
 - **BottomSheet** arrives on a critically-damped spring with a fading backdrop; the iOS grabber is 36×5.
-- **Card** `outline` is a hairline on iOS; **ListRow** follows a 44pt table cell; **ModalFooter** gains a hairline separator; **Toast** drops its border on iOS; **Screen** dismisses the keyboard interactively on iOS.
+- **Card** `outline` is a hairline on iOS; **ListRow** follows a 44pt table cell; **ModalFooter** gains a hairline separator; **Toast** drops its border on iOS; **Screen** dismisses the keyboard interactively and insets its scroll view for the keyboard on iOS.
