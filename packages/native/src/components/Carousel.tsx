@@ -1,5 +1,7 @@
-import { useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
+  Animated,
+  Easing,
   ScrollView,
   View,
   useWindowDimensions,
@@ -49,8 +51,15 @@ export function Carousel({
   const [index, setIndex] = useState(0);
   const lastIndex = useRef(0);
 
+  // Tracked during the scroll rather than at momentum end: waiting for
+  // deceleration to finish leaves the dots pointing at the previous slide for
+  // as long as the fling takes to settle.
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const next = Math.round(event.nativeEvent.contentOffset.x / (itemWidth + theme.space[3]));
+    const stride = itemWidth + theme.space[3];
+    const next = Math.max(
+      0,
+      Math.min(children.length - 1, Math.round(event.nativeEvent.contentOffset.x / stride)),
+    );
     if (next === lastIndex.current) return;
     lastIndex.current = next;
     setIndex(next);
@@ -65,7 +74,8 @@ export function Carousel({
         decelerationRate="fast"
         snapToInterval={itemWidth + theme.space[3]}
         snapToAlignment="start"
-        onMomentumScrollEnd={handleScroll}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         accessibilityLabel={accessibilityLabel}
         contentContainerStyle={{ gap: theme.space[3], paddingHorizontal: gutter }}
       >
@@ -85,19 +95,48 @@ export function Carousel({
           }}
         >
           {children.map((_, dotIndex) => (
-            <View
-              key={dotIndex}
-              style={{
-                width: dotIndex === index ? 18 : 6,
-                height: 6,
-                borderRadius: theme.radius.full,
-                backgroundColor:
-                  dotIndex === index ? theme.colors.primary : theme.colors.borderStrong,
-              }}
-            />
+            <Dot key={dotIndex} active={dotIndex === index} />
           ))}
         </View>
       ) : null}
     </View>
+  );
+}
+
+/**
+ * A single page dot. Width and colour are animated so the active dot grows
+ * into place alongside the slide instead of snapping between states — width
+ * and colour cannot use the native driver, hence the JS-driven timing.
+ */
+function Dot({ active }: { active: boolean }) {
+  const theme = useTheme();
+  const progress = useRef(new Animated.Value(active ? 1 : 0)).current;
+
+  useEffect(() => {
+    const animation = Animated.timing(progress, {
+      toValue: active ? 1 : 0,
+      duration: theme.motion.duration.fast,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: false,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [active, progress, theme.motion.duration]);
+
+  return (
+    <Animated.View
+      style={{
+        width: progress.interpolate({ inputRange: [0, 1], outputRange: [6, 18] }),
+        height: 6,
+        borderRadius: theme.radius.full,
+        // `textMuted` rather than a border token: the dots carry meaning, so
+        // they need 3:1 against the page, which the control-border tokens do
+        // not promise (they sat at ~1.5:1 in both themes).
+        backgroundColor: progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [theme.colors.textMuted, theme.colors.primary],
+        }),
+      }}
+    />
   );
 }

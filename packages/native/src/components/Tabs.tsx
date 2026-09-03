@@ -88,6 +88,10 @@ export function Tabs<T extends string = string>({
       >
         <Text
           size={iosSegmented ? 'xs' : 'sm'}
+          // An explicit line box: RN's implicit ~1.2em leaves no room for the
+          // descenders of a face whose metrics run taller (the app sets a
+          // display font on some rows), and it clips rather than overflowing.
+          leading="normal"
           weight={selected ? 'semibold' : 'medium'}
           color={
             selected ? (isSegmented ? 'text' : 'primaryText') : iosSegmented ? 'text' : 'textMuted'
@@ -133,6 +137,10 @@ export function Tabs<T extends string = string>({
         showsHorizontalScrollIndicator={false}
         accessibilityRole="tablist"
         accessibilityLabel={accessibilityLabel}
+        // `flexGrow: 0` keeps the scroller hugging the row's own height: a
+        // horizontal ScrollView otherwise stretches to fill its parent, and any
+        // height the caller's style implies gets applied to the content box.
+        style={{ flexGrow: 0 }}
         contentContainerStyle={[container, style]}
       >
         {tabs}

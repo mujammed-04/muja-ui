@@ -146,7 +146,42 @@ export const View = makeHost('div', 'View');
 export const Text = makeHost('span', 'Text');
 export const Pressable = makeHost('button', 'Pressable');
 export const TouchableOpacity = makeHost('button', 'TouchableOpacity');
-export const ScrollView = makeHost('div', 'ScrollView');
+const ScrollViewHost = makeHost('div', 'ScrollView');
+
+/**
+ * React replaces `nativeEvent` on its synthetic event with the DOM event, so a
+ * test cannot inject RN's scroll payload from the outside. Instead the stub
+ * reads `scrollLeft`/`scrollTop` off the node — which `fireEvent.scroll` can
+ * set — and rebuilds the `nativeEvent` shape RN handlers expect.
+ */
+type ScrollHandler = (event: { nativeEvent: Record<string, unknown> }) => void;
+
+export const ScrollView = forwardRef<unknown, AnyProps>(function ScrollView(props, ref) {
+  const { onScroll, onMomentumScrollEnd, ...rest } = props as AnyProps & {
+    onScroll?: ScrollHandler;
+    onMomentumScrollEnd?: ScrollHandler;
+  };
+  const toNativeEvent = (target: HTMLElement) => ({
+    nativeEvent: {
+      contentOffset: { x: target.scrollLeft, y: target.scrollTop },
+      contentSize: { width: target.scrollWidth, height: target.scrollHeight },
+      layoutMeasurement: { width: target.clientWidth, height: target.clientHeight },
+    },
+  });
+
+  // Kept distinct: a `scroll` fires the in-flight handler, and momentum end is
+  // reached separately via `scrollend`, so a test can tell the two apart.
+  const handlers: AnyProps = {};
+  if (onScroll) {
+    handlers.onScroll = (event: { target: HTMLElement }) => onScroll(toNativeEvent(event.target));
+  }
+  if (onMomentumScrollEnd) {
+    handlers.onScrollEnd = (event: { target: HTMLElement }) =>
+      onMomentumScrollEnd(toNativeEvent(event.target));
+  }
+
+  return <ScrollViewHost ref={ref} {...rest} {...handlers} />;
+}) as unknown as ComponentType<AnyProps>;
 export const Image = makeHost('img', 'Image');
 export const ActivityIndicator = makeHost('div', 'ActivityIndicator');
 export const KeyboardAvoidingView = makeHost('div', 'KeyboardAvoidingView');
