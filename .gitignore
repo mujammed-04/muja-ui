@@ -7,3 +7,7 @@ coverage/
 .env
 .env.*
 storybook-static/
+
+# tsup writes these next to a package config while building, then removes them.
+# A crashed build can leave one behind; it must never be committed.
+tsup.config.bundled_*.mjs
