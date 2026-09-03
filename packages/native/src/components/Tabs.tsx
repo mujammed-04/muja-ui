@@ -137,10 +137,14 @@ export function Tabs<T extends string = string>({
         showsHorizontalScrollIndicator={false}
         accessibilityRole="tablist"
         accessibilityLabel={accessibilityLabel}
-        // `flexGrow: 0` keeps the scroller hugging the row's own height: a
-        // horizontal ScrollView otherwise stretches to fill its parent, and any
-        // height the caller's style implies gets applied to the content box.
-        style={{ flexGrow: 0 }}
+        // RN gives every ScrollView `flexGrow: 1, flexShrink: 1`. Neither may
+        // apply to a tab bar. Growing stretches the row to fill the parent.
+        // Shrinking is worse: a sibling list without `flex: 1` measures at its
+        // full content height, the column overflows, and the only child that
+        // yields is this scroller — it is squeezed below its own row height,
+        // the labels are then measured against that height and lose their
+        // descenders. The list is the child meant to give, so the bar opts out.
+        style={{ flexGrow: 0, flexShrink: 0 }}
         contentContainerStyle={[container, style]}
       >
         {tabs}
