@@ -73,10 +73,56 @@ describe('contrast', () => {
         ['onDanger', theme.colors.onDanger, theme.colors.danger],
       ];
       for (const [name, fg, bg] of pairs) {
+        expect(contrast(fg, bg), `${theme.name} ${name}: ${fg} on ${bg}`).toBeGreaterThanOrEqual(
+          4.5,
+        );
+      }
+    }
+  });
+
+  // The on-* pairs above only cover text sitting on a filled brand colour.
+  // Body copy on the page and card backgrounds is the far more common case,
+  // and dark mode drifted under AA there while light mode passed.
+  it('clears WCAG AA for text on both page and card backgrounds', () => {
+    for (const theme of [sduLightTheme, sduDarkTheme]) {
+      const grounds: Array<[string, string]> = [
+        ['bg', theme.colors.bg],
+        ['surface', theme.colors.surface],
+      ];
+      const foregrounds: Array<[string, string]> = [
+        ['text', theme.colors.text],
+        ['textSecondary', theme.colors.textSecondary],
+        ['textMuted', theme.colors.textMuted],
+        ['primaryText', theme.colors.primaryText],
+        ['accentText', theme.colors.accentText],
+        ['dangerText', theme.colors.dangerText],
+      ];
+      for (const [groundName, ground] of grounds) {
+        for (const [name, fg] of foregrounds) {
+          expect(
+            contrast(fg, ground),
+            `${theme.name} ${name} on ${groundName}: ${fg} on ${ground}`,
+          ).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    }
+  });
+
+  // WCAG 1.4.11: non-text UI marks that carry meaning need 3:1. The carousel
+  // draws its active dot with `primary` and its inactive one with `textMuted`,
+  // so both have to clear the bar — a dot at 1.5:1 reads as absent rather than
+  // inactive. `border`/`borderStrong` are exempt: purely decorative dividers
+  // and control outlines, which the spec does not hold to a ratio.
+  it('clears WCAG AA for meaningful non-text marks', () => {
+    for (const theme of [sduLightTheme, sduDarkTheme]) {
+      for (const [name, fg] of [
+        ['primary', theme.colors.primary],
+        ['textMuted', theme.colors.textMuted],
+      ] as Array<[string, string]>) {
         expect(
-          contrast(fg, bg),
-          `${theme.name} ${name}: ${fg} on ${bg}`,
-        ).toBeGreaterThanOrEqual(4.5);
+          contrast(fg, theme.colors.bg),
+          `${theme.name} ${name} on bg: ${fg} on ${theme.colors.bg}`,
+        ).toBeGreaterThanOrEqual(3);
       }
     }
   });

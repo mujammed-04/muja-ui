@@ -134,22 +134,32 @@ export const sduDarkTheme: Theme = createTheme(darkTheme, {
 
     text: navy[50],
     textSecondary: navy[200],
-    textMuted: navy[400],
+    // Navy-300, not 400: navy-400 is 3.42:1 on bg and 3.19:1 on a surface —
+    // under the 4.5:1 AA floor for the secondary text this token carries most
+    // (list subtitles, empty-state copy). Navy-300 is 6.64:1 / 6.18:1.
+    textMuted: navy[300],
     textDisabled: navy[600],
     textInverse: navy[950],
 
     border: navy[800],
-    borderStrong: navy[600],
+    // The outline of an unchecked checkbox/radio, i.e. the only thing showing
+    // the control is there. Navy-600 was 1.61:1 against these near-black
+    // surfaces and read as nothing at all; navy-400 is 3.42:1.
+    borderStrong: navy[400],
     borderMuted: navy[900],
     focusRing: navy[300],
 
-    primary: navy[400],
-    primaryHover: navy[300],
-    primaryActive: navy[200],
+    // Navy-300 so the active carousel dot and tab underline stay clearly ahead
+    // of the brightened borderStrong above (6.64:1 vs 3.42:1).
+    primary: navy[300],
+    primaryHover: navy[200],
+    primaryActive: navy[100],
     primarySubtle: navy[900],
     primarySubtleHover: navy[800],
     primaryText: navy[300],
-    onPrimary: '#ffffff',
+    // Navy, not white: on the lightened primary above white is only 3.05:1,
+    // while navy-950 is 6.64:1 — same reasoning as onAccent/onDanger below.
+    onPrimary: navy[950],
 
     accent: bronze[400],
     accentHover: bronze[300],
