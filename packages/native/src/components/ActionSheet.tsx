@@ -82,14 +82,18 @@ function IOSActionSheet({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: theme.colors.border,
   };
-  const row = (pressed: boolean, leading: boolean): ViewStyle => ({
+  // `rest` is what the row shows when it is not pressed: transparent inside the
+  // group, whose card paints the surface, and the surface itself for the Cancel
+  // row, which is its own card — a transparent rest there left Cancel floating
+  // over the backdrop with no card at all until it was pressed.
+  const row = (pressed: boolean, leading: boolean, rest = 'transparent'): ViewStyle => ({
     minHeight: 56,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: leading ? 'flex-start' : 'center',
     gap: theme.space[3],
     paddingHorizontal: theme.space[4],
-    backgroundColor: pressed ? theme.colors.surfaceActive : 'transparent',
+    backgroundColor: pressed ? theme.colors.surfaceActive : rest,
   });
 
   return (
@@ -172,7 +176,7 @@ function IOSActionSheet({
             <Pressable
               accessibilityRole="button"
               onPress={onClose}
-              style={({ pressed }) => [group, row(pressed, false)]}
+              style={({ pressed }) => [group, row(pressed, false, theme.colors.surface)]}
             >
               <Text size="lg" weight="semibold" color="primaryText">
                 {cancelLabel}
