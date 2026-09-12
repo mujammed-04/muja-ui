@@ -878,6 +878,10 @@
 
 /* Avatar --------------------------------------------------------------------- */
 
+/* The ring is what makes the circle visible: `bg-muted` sits within ~1.2:1 of
+   both page colours, so the fill alone reads as loose initials with no shape
+   around them. `border-strong` clears 3:1, the threshold for a non-text
+   element. */
 .mj-avatar {
   display: inline-flex;
   align-items: center;
@@ -885,6 +889,10 @@
   flex: none;
   overflow: hidden;
   background-color: var(--mj-color-bg-muted);
+  /* `box-sizing` is set here rather than globally: the stylesheet ships no
+     reset, so the ring would otherwise add 2px to the fixed width/height. */
+  box-sizing: border-box;
+  border: var(--mj-border-width-thin) solid var(--mj-color-border-strong);
   color: var(--mj-color-text-secondary);
   font-family: var(--mj-font-sans);
   font-weight: var(--mj-font-weight-medium);

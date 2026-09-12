@@ -1,6 +1,6 @@
 import type { Size } from '@muja-ui/core';
 import { useState } from 'react';
-import { Image, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Text } from './Text';
 
@@ -28,6 +28,12 @@ function initials(name: string): string {
 /**
  * Circular avatar with an initials fallback.
  *
+ * The ring is what makes the circle visible: `primarySubtle` is a near-black in
+ * the dark theme and a near-white in the light one, so on a page of `bg` or
+ * `surface` the fill alone contrasts about 1.1:1 and the avatar reads as loose
+ * initials with no shape around them. `borderStrong` clears 3:1 against both
+ * page colours, the threshold for a non-text element.
+ *
  * ```tsx
  * <Avatar source={user.photoUrl} name={user.fullName} size="lg" />
  * ```
@@ -46,6 +52,8 @@ export function Avatar({ source, name, size = 'md', style }: AvatarProps) {
           height: dimension,
           borderRadius: theme.radius.full,
           backgroundColor: theme.colors.primarySubtle,
+          borderWidth: StyleSheet.hairlineWidth,
+          borderColor: theme.colors.borderStrong,
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
