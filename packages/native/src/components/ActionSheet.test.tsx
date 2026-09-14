@@ -28,6 +28,9 @@ describe('ActionSheet', () => {
 
     const cancel = screen.getByRole('button', { name: 'Cancel' });
     expect(styleOf(cancel).borderRadius).toBe(14);
+    // Its own card: the row's rest background must be the surface, not the
+    // transparent rest the grouped rows use, or Cancel floats over the backdrop.
+    expect(styleOf(cancel).backgroundColor).toBe(sduLightTheme.colors.surface);
     expect(styleOf(screen.getByText('Cancel')).fontWeight).toBe('600');
   });
 
